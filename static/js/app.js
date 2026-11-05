@@ -512,6 +512,16 @@ async function loadCatalogForSelectedStore() {
   const storeId = Number(storeSelect.value);
   if (!storeId) return;
 
+  const bannerTitle = document.getElementById("restaurant-banner-title");
+  const bannerImg = document.getElementById("restaurant-banner-img");
+  if (bannerTitle) {
+    bannerTitle.textContent = `Order.live — ${getStoreName(storeId)}`;
+  }
+  if (bannerImg) {
+    bannerImg.src =
+      storeId === 2 ? DEFAULT_FOOD_PHOTOS_BY_ID[4] : DEFAULT_FOOD_PHOTOS_BY_ID[1];
+  }
+
   state.products = await api.listProducts(storeId);
   state.cart = {};
   renderCatalog();
@@ -653,7 +663,10 @@ async function initializeAuthenticatedWorkspace(user, token) {
 
   state.stores = await api.listStores();
 
+  const customerRestaurantBanner = document.getElementById("customer-restaurant-banner");
+
   if (user.role === "CUSTOMER") {
+    if (customerRestaurantBanner) customerRestaurantBanner.hidden = false;
     customerOrderPanel.hidden = false;
     staffInfoPanel.hidden = true;
     wsInspectorPanel.hidden = true;
@@ -675,6 +688,7 @@ async function initializeAuthenticatedWorkspace(user, token) {
     }
     await loadCatalogForSelectedStore();
   } else if (user.role === "OPERATOR") {
+    if (customerRestaurantBanner) customerRestaurantBanner.hidden = true;
     customerOrderPanel.hidden = true;
     staffInfoPanel.hidden = false;
     wsInspectorPanel.hidden = false;
@@ -690,6 +704,7 @@ async function initializeAuthenticatedWorkspace(user, token) {
       user.store_id
     )}. Recibes en tiempo real todos los pedidos de tu sucursal.`;
   } else if (user.role === "ADMIN") {
+    if (customerRestaurantBanner) customerRestaurantBanner.hidden = true;
     customerOrderPanel.hidden = true;
     staffInfoPanel.hidden = false;
     wsInspectorPanel.hidden = false;

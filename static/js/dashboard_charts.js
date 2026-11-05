@@ -1,6 +1,6 @@
 /**
  * Controlador de KPIs y gráficos en vivo con Chart.js (Fase 6).
- * Paleta gastronómica cálida (Brasa & Masa — tasteskill 2.5 place deal).
+ * Paleta inspirada en el Figma UI Kit Order.uk (#FC8A06 Orange, #028643 Green, #03081F Navy).
  */
 
 const STATUS_ORDER = ["RECEIVED", "PREPARING", "READY", "DELIVERED", "CANCELLED"];
@@ -12,13 +12,12 @@ const STATUS_LABELS_ES = [
   "Cancelado",
 ];
 
-// Colores gastronómicos cálidos (terracota, horno ámbar, albahaca, cacao y carmín)
 const STATUS_BG_COLORS = [
-  "#c84628", // RECEIVED (Terracota Brasa)
-  "#d97706", // PREPARING (Ámbar Horno)
-  "#2d6a4f", // READY (Verde Albahaca)
-  "#6e645c", // DELIVERED (Cacao Piedra)
-  "#991b1b", // CANCELLED (Carmín)
+  "#FC8A06", // RECEIVED (Order.uk Orange)
+  "#03081F", // PREPARING (Order.uk Deep Navy)
+  "#028643", // READY (Order.uk Basket Green)
+  "#64748B", // DELIVERED (Slate)
+  "#DC2626", // CANCELLED (Red)
 ];
 
 let statusChartInstance = null;
@@ -35,7 +34,7 @@ function ensureChartsInitialized() {
     return false;
   }
 
-  const fontFamily = '"Figtree", system-ui, -apple-system, sans-serif';
+  const fontFamily = '"Poppins", system-ui, -apple-system, sans-serif';
   const monoFamily = '"JetBrains Mono", monospace';
 
   if (!statusChartInstance) {
@@ -48,7 +47,7 @@ function ensureChartsInitialized() {
             label: "Órdenes",
             data: [0, 0, 0, 0, 0],
             backgroundColor: STATUS_BG_COLORS,
-            borderColor: "#ede5d6",
+            borderColor: "#FFFFFF",
             borderWidth: 2,
           },
         ],
@@ -61,7 +60,7 @@ function ensureChartsInitialized() {
           legend: {
             position: "bottom",
             labels: {
-              color: "#261b15",
+              color: "#03081F",
               font: { family: fontFamily, size: 12 },
               boxWidth: 12,
               padding: 12,
@@ -81,8 +80,8 @@ function ensureChartsInitialized() {
           {
             label: "Ventas hoy ($)",
             data: [],
-            backgroundColor: "#c84628",
-            borderRadius: 6,
+            backgroundColor: "#FC8A06",
+            borderRadius: 8,
             maxBarThickness: 44,
           },
         ],
@@ -98,7 +97,7 @@ function ensureChartsInitialized() {
         scales: {
           x: {
             ticks: {
-              color: "#261b15",
+              color: "#03081F",
               font: { family: fontFamily, size: 12 },
             },
             grid: {
@@ -108,12 +107,12 @@ function ensureChartsInitialized() {
           y: {
             beginAtZero: true,
             ticks: {
-              color: "#6e645c",
+              color: "#525866",
               font: { family: monoFamily, size: 11 },
               callback: (val) => `$${val}`,
             },
             grid: {
-              color: "rgba(38, 27, 21, 0.1)",
+              color: "rgba(3, 8, 31, 0.08)",
             },
           },
         },

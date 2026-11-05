@@ -1,50 +1,56 @@
 /* ==========================================================================
-   tasteskill 2.5 — Deal: kind=place | palette=artisan-kitchen | type=bricolage
-   Tokens: Warm parchment cream (#f6f1e7 / #ede5d6), espresso ink (#261b15),
-   single wood-fired terracotta accent (#c84628), 1px warm hairlines, zero violet.
+   Order.live — Inspirado en el Figma Community UI Kit "Food Delivery Website & App" (Order.uk)
+   Colores oficiales del UI Kit:
+   - Brand Orange: #FC8A06
+   - Deep Midnight Navy: #03081F
+   - Basket / Checkout Green: #028643
+   - Surface & Canvas: #FFFFFF / #F5F6FA
+   - Tipografía: Poppins + JetBrains Mono
    ========================================================================== */
 
 :root {
-  /* Paleta gastronómica cálida (start.mjs brand --page place --type bricolage) */
-  --p-bg: #f6f1e7;
-  --p-surface: #ede5d6;
-  --p-surface-alt: #e2d7c3;
-  --p-ink: #261b15;
-  --p-muted: #6e645c;
-  --p-accent: #c84628;
-  --p-accent-hover: #ab371c;
-  --p-accent-ink: #ffffff;
-  --p-action: #c84628;
-  --p-action-ink: #ffffff;
+  --p-orange: #FC8A06;
+  --p-orange-hover: #e57a00;
+  --p-navy: #03081F;
+  --p-navy-surface: #0f1636;
+  --p-green: #028643;
+  --p-green-hover: #026e36;
 
-  /* Superficie inversa (Espresso profundo para el inspector técnico) */
-  --p-inv-bg: #261b15;
-  --p-inv-surface: #322721;
-  --p-inv-ink: #f6f1e7;
-  --p-inv-muted: #a0988f;
+  --p-bg: #F5F6FA;
+  --p-surface: #FFFFFF;
+  --p-surface-alt: #ECEEF5;
+  --p-ink: #03081F;
+  --p-muted: #525866;
+  --p-accent: #FC8A06;
+  --p-accent-ink: #FFFFFF;
+  --p-action: #FC8A06;
+  --p-action-ink: #FFFFFF;
 
-  /* Estados semánticos de cocina (cálidos y legibles) */
-  --st-received-bg: #fae1d8;
-  --st-received-ink: #9c2f15;
-  --st-preparing-bg: #f9e6c3;
-  --st-preparing-ink: #804806;
-  --st-ready-bg: #d4ece0;
-  --st-ready-ink: #145738;
-  --st-delivered-bg: #e3dcd1;
-  --st-delivered-ink: #4f463f;
-  --st-cancelled-bg: #f7d6d4;
-  --st-cancelled-ink: #8f1d18;
+  --p-inv-bg: #03081F;
+  --p-inv-surface: #111836;
+  --p-inv-ink: #FFFFFF;
+  --p-inv-muted: #9BA3B8;
 
-  /* Hairlines a 14% de --p-ink */
-  --hairline: color-mix(in srgb, var(--p-ink) 14%, transparent);
-  --hairline-strong: color-mix(in srgb, var(--p-ink) 26%, transparent);
+  /* Estados semánticos */
+  --st-received-bg: #FFF3E0;
+  --st-received-ink: #C25E00;
+  --st-preparing-bg: #E8EDFF;
+  --st-preparing-ink: #1D3A8A;
+  --st-ready-bg: #DCFCE7;
+  --st-ready-ink: #027A3D;
+  --st-delivered-bg: #E2E8F0;
+  --st-delivered-ink: #334155;
+  --st-cancelled-bg: #FEE2E2;
+  --st-cancelled-ink: #B91C1C;
 
-  /* Tipografía Bricolage Grotesque + Figtree + JetBrains Mono */
-  --font-display: "Bricolage Grotesque", system-ui, -apple-system, sans-serif;
-  --font-text: "Figtree", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --hairline: rgba(3, 8, 31, 0.1);
+  --hairline-strong: rgba(3, 8, 31, 0.2);
+  --card-shadow: 0 6px 24px rgba(3, 8, 31, 0.06);
 
-  /* Escala de espaciado (4, 8, 12, 16, 24, 32, 48, 64) */
+  --font-display: "Poppins", system-ui, -apple-system, sans-serif;
+  --font-text: "Poppins", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
   --s-1: 4px;
   --s-2: 8px;
   --s-3: 12px;
@@ -52,17 +58,12 @@
   --s-5: 24px;
   --s-6: 32px;
   --s-7: 48px;
-  --s-8: 64px;
 
-  /* Radios (data-radius="soft": 8 / 12 / 16) */
   --r-sm: 8px;
   --r-md: 12px;
   --r-lg: 16px;
-  --r-btn: 8px;
-
-  /* Ritmo de layout */
-  --nav-h: 72px;
-  --gut: clamp(24px, 5vw, 80px);
+  --r-pill: 100px;
+  --gut: clamp(20px, 4vw, 64px);
 }
 
 * {
@@ -80,24 +81,47 @@ body {
   background-color: var(--p-bg);
   color: var(--p-ink);
   font-family: var(--font-text);
-  font-size: 16px;
-  line-height: 1.55;
+  font-size: 15px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
 .wrap {
-  max-width: 1360px;
+  max-width: 1380px;
   margin-inline: auto;
   padding-inline: var(--gut);
 }
 
-/* Barra superior fija de 72px con hairline cálido de 1px */
+/* 1. Barra superior promocional estilo Order.uk */
+.promo-strip {
+  background-color: #FAFAFA;
+  border-block-end: 1px solid var(--hairline);
+  font-size: 0.82rem;
+  color: var(--p-ink);
+}
+
+.promo-strip-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 44px;
+  padding-block: 6px;
+}
+
+.promo-right {
+  font-weight: 500;
+  color: var(--p-green);
+}
+
+/* 2. Header Principal con Logo Order.live y Botones Pill */
 .topbar {
   position: sticky;
   top: 0;
-  z-index: 20;
-  min-height: var(--nav-h);
-  background-color: var(--p-bg);
+  z-index: 30;
+  min-height: 76px;
+  background-color: var(--p-surface);
   border-block-end: 1px solid var(--hairline);
   display: flex;
   align-items: center;
@@ -119,47 +143,33 @@ body {
   gap: var(--s-3);
 }
 
-.brand-mark {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--r-sm);
-  background-color: var(--p-accent);
-  color: var(--p-accent-ink);
+.brand-logo-text {
   font-family: var(--font-display);
+  font-size: 1.85rem;
   font-weight: 700;
-  font-size: 16px;
+  letter-spacing: -0.03em;
+  color: var(--p-navy);
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  letter-spacing: -0.03em;
+  align-items: baseline;
 }
 
-.topbar-brand h1 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
-}
-
-.subtitle {
-  margin: 0;
-  font-size: 0.84rem;
-  color: var(--p-muted);
+.brand-logo-pill {
+  background-color: var(--p-orange);
+  color: #FFFFFF;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-inline-start: 2px;
 }
 
 .badge-tech {
-  font-family: var(--font-text);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  padding: 2px 10px;
-  border-radius: 4px;
-  background-color: var(--st-received-bg);
-  color: var(--st-received-ink);
-  border: 1px solid color-mix(in srgb, var(--st-received-ink) 20%, transparent);
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
+  background-color: var(--p-orange);
+  color: #FFFFFF;
 }
 
 .session-bar {
@@ -173,11 +183,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: var(--s-2);
-  padding: 6px 12px;
-  border-radius: var(--r-sm);
-  background-color: var(--p-surface);
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  background-color: var(--p-bg);
   border: 1px solid var(--hairline);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 500;
 }
 
@@ -189,192 +199,454 @@ body {
 }
 
 .ws-dot.connected {
-  background-color: #145738;
+  background-color: var(--p-green);
 }
 
 .ws-dot.reconnecting {
-  background-color: #b4690e;
+  background-color: var(--p-orange);
 }
 
 .ws-dot.disconnected {
-  background-color: #b91c1c;
+  background-color: #DC2626;
 }
 
 .ws-latency {
   font-family: var(--font-mono);
   color: var(--p-muted);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
 }
 
 .user-pill {
   display: inline-flex;
   align-items: center;
   gap: var(--s-2);
-  font-size: 0.88rem;
-  padding-inline: var(--s-2);
+  background-color: var(--p-navy);
+  color: #FFFFFF;
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  font-size: 0.85rem;
 }
 
 .role-badge {
   font-family: var(--font-mono);
-  font-size: 0.74rem;
-  font-weight: 500;
-  padding: 3px 8px;
-  border-radius: 4px;
-  background-color: var(--p-ink);
-  color: var(--p-bg);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background-color: var(--p-orange);
+  color: #FFFFFF;
 }
 
 .main-shell {
-  padding-block: var(--s-6);
+  padding-block: var(--s-5) var(--s-7);
 }
 
-/* Split Hero Gastronómico */
-.auth-split {
+/* 3. HERO BANNER ESTILO ORDER.UK FIGMA UI KIT (#03081F + #FC8A06) */
+.orderuk-landing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6);
+}
+
+.orderuk-hero-banner {
+  position: relative;
+  background-color: var(--p-navy);
+  color: #FFFFFF;
+  border-radius: var(--r-lg);
+  overflow: hidden;
   display: grid;
-  grid-template-columns: 1.12fr 0.88fr;
-  gap: var(--s-7);
-  align-items: start;
+  grid-template-columns: 1.05fr 0.95fr;
+  align-items: center;
+  min-height: 410px;
+  box-shadow: var(--card-shadow);
 }
 
 @media (max-width: 980px) {
-  .auth-split {
+  .orderuk-hero-banner {
     grid-template-columns: 1fr;
-    gap: var(--s-6);
+    padding-block-end: var(--s-5);
   }
 }
 
-.eyebrow {
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: var(--p-accent);
-  margin: 0 0 var(--s-2);
-}
-
-.hero-display {
-  font-family: var(--font-display);
-  font-size: clamp(1.95rem, 3.1vw, 2.85rem);
-  font-weight: 500;
-  line-height: 1.08;
-  letter-spacing: -0.03em;
-  margin: 0 0 var(--s-5);
-}
-
-.hero-display .muted {
-  color: var(--p-muted);
-  font-weight: 400;
-}
-
-/* Galería fotográfica del Hero de Cocina */
-.culinary-hero-gallery {
-  display: grid;
-  grid-template-columns: 1.35fr 1fr;
-  gap: var(--s-3);
-  margin-block-end: var(--s-5);
+.orderuk-hero-copy {
+  padding: var(--s-6) var(--s-7);
+  z-index: 2;
 }
 
 @media (max-width: 640px) {
-  .culinary-hero-gallery {
+  .orderuk-hero-copy {
+    padding: var(--s-5);
+  }
+}
+
+.hero-kicker {
+  font-size: 0.9rem;
+  color: #D1D5DB;
+  margin: 0 0 var(--s-2);
+}
+
+.orderuk-hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.3vw, 3.1rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--s-3);
+}
+
+.accent-orange {
+  color: var(--p-orange);
+  display: block;
+}
+
+.orderuk-hero-sub {
+  color: #CBD5E1;
+  font-size: 0.95rem;
+  max-width: 52ch;
+  margin: 0 0 var(--s-5);
+}
+
+.hero-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.hero-stat-pill {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
+  padding: 6px 14px;
+  border-radius: var(--r-pill);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.orderuk-hero-visual {
+  position: relative;
+  height: 100%;
+  min-height: 390px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-inline: var(--s-4);
+}
+
+/* El arco naranja curvo derecho característico del Figma Order.uk */
+.orange-arc {
+  position: absolute;
+  top: 24px;
+  right: 0;
+  bottom: 0;
+  width: 68%;
+  background-color: var(--p-orange);
+  border-top-left-radius: 220px;
+  z-index: 1;
+}
+
+.hero-main-food-img {
+  position: relative;
+  z-index: 2;
+  width: 310px;
+  height: 310px;
+  object-fit: cover;
+  border-radius: 20px;
+  border: 4px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+}
+
+/* Las 3 tarjetas blancas flotantes de estado del pedido sobre el arco naranja */
+.floating-order-steps {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  margin-inline-start: -32px;
+}
+
+@media (max-width: 680px) {
+  .orderuk-hero-visual {
+    flex-direction: column;
+    gap: var(--s-3);
+  }
+  .floating-order-steps {
+    margin-inline-start: 0;
+    width: 100%;
+  }
+}
+
+.float-step-card {
+  background-color: #FFFFFF;
+  color: var(--p-navy);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  min-width: 240px;
+  box-shadow: 0 10px 24px rgba(3, 8, 31, 0.18);
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--p-navy);
+  color: var(--p-orange);
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-card-body strong {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.step-card-body span {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--p-muted);
+}
+
+.text-orange {
+  color: var(--p-orange);
+}
+
+/* 4. Grid Inferior de Portada: Categorías de Comida + Login */
+.orderuk-auth-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: var(--s-5);
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .orderuk-auth-grid {
     grid-template-columns: 1fr;
   }
 }
 
-.culinary-hero-main,
-.culinary-hero-side {
+.section-title-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-2);
+  margin-block-end: var(--s-4);
+}
+
+.section-title-bar h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.pill-tag {
+  border: 1px solid var(--p-orange);
+  color: var(--p-orange);
+  padding: 4px 14px;
+  border-radius: var(--r-pill);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.category-cards-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-4);
+}
+
+@media (max-width: 720px) {
+  .category-cards-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cat-deal-card {
   position: relative;
-  height: 230px;
+  height: 220px;
   border-radius: var(--r-md);
   overflow: hidden;
-  border: 1px solid var(--hairline);
-  background-color: var(--p-surface);
+  box-shadow: var(--card-shadow);
+  background-color: var(--p-navy);
 }
 
-.culinary-hero-main img,
-.culinary-hero-side img {
+.cat-deal-card img {
   width: 100%;
   height: 100%;
-  display: block;
   object-fit: cover;
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  display: block;
+  transition: transform 0.3s ease;
 }
 
-.culinary-hero-main:hover img,
-.culinary-hero-side:hover img {
-  transform: scale(1.03);
+.cat-deal-card:hover img {
+  transform: scale(1.05);
 }
 
-.hero-dish-tag {
+.discount-badge {
   position: absolute;
-  bottom: var(--s-3);
-  left: var(--s-3);
-  background-color: var(--p-bg);
-  color: var(--p-ink);
-  border: 1px solid var(--hairline-strong);
-  border-radius: 4px;
-  padding: 4px 10px;
+  top: 0;
+  right: var(--s-4);
+  background-color: var(--p-navy);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  z-index: 2;
+}
+
+.cat-deal-overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: var(--s-4);
+  background: linear-gradient(to top, rgba(3, 8, 31, 0.92) 15%, rgba(3, 8, 31, 0.05) 100%);
+  color: #FFFFFF;
+}
+
+.cat-deal-overlay span {
+  display: block;
+  color: var(--p-orange);
   font-size: 0.78rem;
   font-weight: 600;
 }
 
-.spec-rows {
-  margin: 0;
-  border-block-start: 1px solid var(--hairline);
+.cat-deal-overlay h3 {
+  margin: 2px 0 0;
+  font-size: 1.05rem;
+  font-weight: 700;
 }
 
-.spec-row {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: var(--s-4);
-  padding-block: var(--s-3);
-  border-block-end: 1px solid var(--hairline);
-  font-size: 0.92rem;
+/* 5. Banner del Restaurante (Vista Interna Cliente — estilo Figma node 4-2) */
+.restaurant-banner {
+  background-color: var(--p-navy);
+  color: #FFFFFF;
+  border-radius: var(--r-lg);
+  padding: var(--s-5) var(--s-6);
+  margin-block-end: var(--s-5);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-5);
+  box-shadow: var(--card-shadow);
+  position: relative;
+  overflow: hidden;
 }
 
-.spec-row dt {
+.restaurant-kicker {
+  display: block;
+  color: var(--p-orange);
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--p-ink);
+  margin-block-end: 4px;
 }
 
-.spec-row dd {
-  margin: 0;
+.restaurant-banner-info h2 {
+  margin: 0 0 var(--s-3);
+  font-size: clamp(1.5rem, 2.4vw, 2.2rem);
+  font-weight: 700;
+}
+
+.restaurant-meta-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin-block-end: var(--s-3);
+}
+
+.meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: 8px 16px;
+  border-radius: var(--r-pill);
+  font-size: 0.84rem;
+  font-weight: 500;
+}
+
+.open-clock-pill {
+  display: inline-block;
+  background-color: var(--p-orange);
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 6px 16px;
+  border-radius: var(--r-pill);
+}
+
+.restaurant-banner-photo-wrap {
+  position: relative;
+}
+
+.restaurant-banner-photo-wrap img {
+  width: 310px;
+  height: 190px;
+  object-fit: cover;
+  border-radius: var(--r-md);
+  display: block;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.rating-float-card {
+  position: absolute;
+  bottom: -10px;
+  left: -18px;
+  background-color: #FFFFFF;
+  color: var(--p-navy);
+  padding: 8px 14px;
+  border-radius: var(--r-md);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.rating-float-card strong {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rating-float-card span {
+  color: var(--p-orange);
+  font-size: 0.8rem;
+}
+
+.rating-float-card small {
+  display: block;
+  font-size: 0.68rem;
   color: var(--p-muted);
 }
 
-/* Tarjetas: 1 sola receta coherente en toda la página */
+/* 6. Tarjetas Generales y Botones */
 .card {
   background-color: var(--p-surface);
   border: 1px solid var(--hairline);
   border-radius: var(--r-md);
   padding: var(--s-5);
   margin-block-end: var(--s-5);
+  box-shadow: var(--card-shadow);
 }
 
 .card h2 {
   margin-block-start: 0;
   margin-block-end: var(--s-2);
-  font-family: var(--font-display);
-  font-size: 1.32rem;
-  font-weight: 600;
-  letter-spacing: -0.025em;
-}
-
-.menu-panel-header {
-  padding-block-end: var(--s-3);
-  margin-block-end: var(--s-3);
-  border-block-end: 1px solid var(--hairline);
-}
-
-.menu-kicker {
-  display: block;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--p-accent);
-  margin-block-end: 2px;
+  font-size: 1.28rem;
+  font-weight: 700;
 }
 
 .card-inverse {
   background-color: var(--p-inv-bg);
   color: var(--p-inv-ink);
-  border-color: var(--p-inv-surface);
 }
 
 .card-inverse h2 {
@@ -400,16 +672,15 @@ body {
 }
 
 .section-label {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--p-muted);
   margin: 0 0 var(--s-2);
 }
 
-/* Botones de demostración */
 .demo-accounts {
-  margin-block-end: var(--s-5);
-  padding: var(--s-4);
+  margin-block-end: var(--s-4);
+  padding: var(--s-3);
   background-color: var(--p-bg);
   border-radius: var(--r-sm);
   border: 1px solid var(--hairline);
@@ -417,17 +688,16 @@ body {
 
 .demo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
   gap: var(--s-2);
 }
 
-/* Sistema único de botones con micro-interacción step/press (Regla 5 de tasteskill) */
 .btn {
   cursor: pointer;
   font-family: var(--font-text);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 600;
-  border-radius: var(--r-btn);
+  border-radius: var(--r-pill);
   padding: 0 var(--s-5);
   min-height: 44px;
   display: inline-flex;
@@ -435,19 +705,13 @@ body {
   justify-content: center;
   gap: var(--s-2);
   border: 1px solid transparent;
-  transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1),
-              background-color 0.14s ease,
-              border-color 0.14s ease;
+  transition: transform 0.14s ease, background-color 0.14s ease;
   color: var(--p-ink);
   background-color: var(--p-surface);
 }
 
 .btn:hover:not(:disabled) {
   transform: translateY(-1px);
-}
-
-.btn:active:not(:disabled) {
-  transform: translateY(1px);
 }
 
 .btn:disabled {
@@ -458,69 +722,318 @@ body {
 .btn-sm {
   min-height: 36px;
   padding: 0 var(--s-3);
-  font-size: 0.84rem;
+  font-size: 0.82rem;
 }
 
 .btn-primary {
-  background-color: var(--p-action);
-  color: var(--p-action-ink);
+  background-color: var(--p-orange);
+  color: #FFFFFF;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: var(--p-accent-hover);
+  background-color: var(--p-orange-hover);
 }
 
 .btn-outline {
-  background-color: var(--p-bg);
+  background-color: var(--p-surface);
   border-color: var(--hairline-strong);
   color: var(--p-ink);
 }
 
 .btn-outline:hover:not(:disabled) {
-  background-color: var(--p-surface-alt);
+  border-color: var(--p-orange);
+  color: var(--p-orange);
 }
 
 .btn-outline-inverse {
   background-color: var(--p-inv-surface);
-  border-color: color-mix(in srgb, var(--p-inv-ink) 22%, transparent);
+  border-color: rgba(255, 255, 255, 0.2);
   color: var(--p-inv-ink);
 }
 
 .btn-danger {
   background-color: var(--st-cancelled-bg);
-  border-color: color-mix(in srgb, var(--st-cancelled-ink) 25%, transparent);
   color: var(--st-cancelled-ink);
 }
 
 .btn-demo {
+  border-radius: var(--r-sm);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
   text-align: left;
-  padding: var(--s-3);
-  min-height: 54px;
+  padding: 10px 12px;
+  min-height: 52px;
   background-color: var(--p-surface);
   border-color: var(--hairline);
 }
 
 .btn-demo:hover:not(:disabled) {
-  border-color: var(--p-action);
-  transform: translateY(-2px);
+  border-color: var(--p-orange);
+  background-color: #FFF9F2;
 }
 
 .btn-demo strong {
-  font-size: 0.92rem;
-  font-weight: 600;
+  font-size: 0.86rem;
+  font-weight: 700;
 }
 
 .btn-demo span {
-  font-size: 0.76rem;
-  font-weight: 500;
+  font-size: 0.72rem;
   color: var(--p-muted);
 }
 
-/* Formularios (tasteskill system.md: inputs de 48px, labels de 13px/500, texto 16px) */
+/* 7. Tarjetas de Platos estilo Order.uk (Texto a la izquierda, Foto cuadrada a la derecha con botón +) */
+.store-selector-bar {
+  background-color: var(--p-orange);
+  color: #FFFFFF;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-md);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.store-selector-bar label {
+  color: #FFFFFF;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.store-selector-bar select {
+  flex: 1;
+  min-width: 220px;
+  min-height: 42px;
+  border-radius: var(--r-pill);
+  border: none;
+  padding: 6px 16px;
+  font-weight: 600;
+  background-color: #FFFFFF;
+  color: var(--p-navy);
+}
+
+.menu-section-box {
+  background-color: transparent;
+}
+
+.menu-category-heading {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--p-navy);
+  margin: var(--s-2) 0 var(--s-3);
+}
+
+.catalog-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.catalog-item {
+  background-color: var(--p-surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: var(--s-4);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-4);
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+
+.catalog-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--p-orange);
+}
+
+/* En Order.uk el texto va a la izquierda y la foto a la derecha */
+.catalog-item-info {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-4);
+  flex: 1;
+  min-width: 0;
+}
+
+.catalog-photo-frame {
+  width: 120px;
+  height: 110px;
+  flex-shrink: 0;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+  background-color: var(--p-bg);
+}
+
+.catalog-thumb {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.28s ease;
+}
+
+.catalog-item:hover .catalog-thumb {
+  transform: scale(1.05);
+}
+
+.dish-title-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-block-end: 6px;
+}
+
+.catalog-item-info strong {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--p-navy);
+}
+
+.dish-price-pill {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--p-navy);
+}
+
+.catalog-item-info span.dish-desc {
+  display: block;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--p-muted);
+}
+
+.qty-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--p-bg);
+  padding: 6px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--hairline);
+}
+
+.qty-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--p-navy);
+  border: none;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qty-btn:hover {
+  background-color: var(--p-orange);
+}
+
+.qty-value {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--p-navy);
+}
+
+/* 8. Tarjeta "Mi Canasta" (My Basket) con cabecera verde #028643 estilo Figma Order.uk */
+.basket-card {
+  background-color: var(--p-surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+}
+
+.basket-header {
+  background-color: var(--p-green);
+  color: #FFFFFF;
+  padding: var(--s-4) var(--s-5);
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.basket-icon {
+  font-size: 1.6rem;
+}
+
+.basket-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.basket-header span {
+  font-size: 0.78rem;
+  opacity: 0.9;
+}
+
+.basket-body {
+  padding: var(--s-5);
+}
+
+.basket-total-pill {
+  background-color: var(--p-orange);
+  color: #FFFFFF;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.basket-total-pill span {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.basket-total-pill strong {
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+
+.btn-checkout {
+  width: 100%;
+  min-height: 52px;
+  border-radius: var(--r-sm);
+  background-color: var(--p-green);
+  color: #FFFFFF;
+  font-size: 1.05rem;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  padding-inline: var(--s-5);
+}
+
+.btn-checkout:hover:not(:disabled) {
+  background-color: var(--p-green-hover);
+}
+
+.checkout-arrow {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  color: var(--p-green);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+/* Formularios */
 .form-stack {
   display: flex;
   flex-direction: column;
@@ -534,18 +1047,18 @@ body {
 }
 
 label {
-  font-size: 13px;
+  font-size: 0.82rem;
   font-weight: 600;
-  color: var(--p-ink);
+  color: var(--p-navy);
 }
 
 input,
 select,
 textarea {
   font-family: var(--font-text);
-  font-size: 16px;
+  font-size: 0.95rem;
   padding: 10px 14px;
-  min-height: 48px;
+  min-height: 46px;
   border-radius: var(--r-sm);
   border: 1px solid var(--hairline-strong);
   background-color: var(--p-bg);
@@ -555,10 +1068,8 @@ textarea {
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
-button:focus-visible,
-summary:focus-visible,
-pre:focus-visible {
-  outline: 2px solid var(--p-action);
+button:focus-visible {
+  outline: 2px solid var(--p-orange);
   outline-offset: 2px;
 }
 
@@ -567,20 +1078,19 @@ pre:focus-visible {
   padding: var(--s-3);
   border-radius: var(--r-sm);
   background-color: var(--st-cancelled-bg);
-  border: 1px solid color-mix(in srgb, var(--st-cancelled-ink) 30%, transparent);
   color: var(--st-cancelled-ink);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
 }
 
-/* Grid Principal del Workspace: carta amplia de 480px a la izquierda */
+/* Grid Principal del Workspace */
 .workspace-grid {
   display: grid;
-  grid-template-columns: 480px 1fr;
+  grid-template-columns: 520px 1fr;
   gap: var(--s-5);
   align-items: start;
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1100px) {
   .workspace-grid {
     grid-template-columns: 1fr;
   }
@@ -599,91 +1109,6 @@ pre:focus-visible {
   border-block-end: 1px solid var(--hairline);
 }
 
-/* Carta gastronómica de platos (.catalog-list) */
-.catalog-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-}
-
-.catalog-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--s-3);
-  padding: var(--s-3);
-  background-color: var(--p-bg);
-  border: 1px solid var(--hairline);
-  border-radius: var(--r-sm);
-  transition: border-color 0.16s ease, transform 0.16s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.catalog-item:hover {
-  border-color: var(--hairline-strong);
-  transform: translateY(-1px);
-}
-
-.catalog-item-info {
-  display: flex;
-  align-items: center;
-  gap: var(--s-3);
-  min-width: 0;
-}
-
-.catalog-photo-frame {
-  width: 124px;
-  height: 94px;
-  flex-shrink: 0;
-  border-radius: var(--r-sm);
-  overflow: hidden;
-  border: 1px solid var(--hairline);
-  background-color: var(--p-surface);
-}
-
-.catalog-thumb {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.catalog-item:hover .catalog-thumb {
-  transform: scale(1.04);
-}
-
-.dish-title-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--s-2);
-  margin-block-end: 4px;
-}
-
-.catalog-item-info strong {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--p-ink);
-}
-
-.dish-price-pill {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background-color: var(--st-received-bg);
-  color: var(--st-received-ink);
-}
-
-.catalog-item-info span.dish-desc {
-  display: block;
-  font-size: 0.82rem;
-  line-height: 1.4;
-  color: var(--p-muted);
-}
-
 .admin-upload-box {
   margin-block-start: var(--s-4);
   padding-block-start: var(--s-4);
@@ -696,74 +1121,8 @@ pre:focus-visible {
   align-items: center;
   gap: var(--s-2);
   margin-block-start: var(--s-3);
-  padding-block-start: var(--s-2);
 }
 
-.qty-controls {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.qty-btn {
-  width: 34px;
-  height: 34px;
-  min-height: 34px;
-  padding: 0;
-  border-radius: var(--r-sm);
-  background-color: var(--p-surface);
-  border: 1px solid var(--hairline-strong);
-  color: var(--p-ink);
-  font-family: var(--font-mono);
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.qty-btn:hover {
-  background-color: var(--p-action);
-  border-color: var(--p-action);
-  color: var(--p-action-ink);
-}
-
-.qty-value {
-  min-width: 24px;
-  text-align: center;
-  font-family: var(--font-mono);
-  font-weight: 600;
-}
-
-.cart-summary {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--s-3) var(--s-4);
-  border-radius: var(--r-sm);
-  background-color: var(--p-bg);
-  border: 1px solid var(--hairline-strong);
-}
-
-.cart-summary-label {
-  display: block;
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.cart-summary-sub {
-  display: block;
-  font-size: 0.76rem;
-  color: var(--p-muted);
-}
-
-.cart-summary strong {
-  font-family: var(--font-display);
-  font-size: 1.45rem;
-  font-weight: 700;
-  color: var(--p-action);
-}
-
-/* Salas activas */
 .rooms-list {
   list-style: none;
   padding: 0;
@@ -775,31 +1134,28 @@ pre:focus-visible {
 
 .rooms-list li {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   padding: 4px 10px;
   background-color: var(--p-bg);
   border: 1px solid var(--hairline);
-  border-radius: 4px;
-  color: var(--p-ink);
+  border-radius: var(--r-pill);
 }
 
-/* Monitor de tramas WebSocket */
 .ws-log-box {
   margin: 0;
   padding: var(--s-3);
   background-color: var(--p-inv-surface);
-  border: 1px solid color-mix(in srgb, var(--p-inv-ink) 14%, transparent);
   border-radius: var(--r-sm);
   max-height: 240px;
   overflow-y: auto;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   color: var(--p-inv-ink);
   white-space: pre-wrap;
   word-break: break-word;
 }
 
-/* Tarjetas de Pedidos y Comandas */
+/* Tarjetas de Pedidos y Stepper de 4 Etapas */
 .orders-list {
   display: flex;
   flex-direction: column;
@@ -809,10 +1165,9 @@ pre:focus-visible {
 .order-card {
   background-color: var(--p-bg);
   border: 1px solid var(--hairline);
-  border-radius: var(--r-sm);
+  border-radius: var(--r-md);
   padding: var(--s-4) var(--s-5);
-  transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
-              border-color 0.25s ease;
+  transition: transform 0.16s ease, border-color 0.25s ease;
 }
 
 .order-card:hover {
@@ -820,7 +1175,7 @@ pre:focus-visible {
 }
 
 .order-card.highlight-flash {
-  border-color: var(--p-action);
+  border-color: var(--p-orange);
 }
 
 .order-header {
@@ -833,7 +1188,6 @@ pre:focus-visible {
   border-block-end: 1px solid var(--hairline);
 }
 
-/* Barra visual de progreso de cocina en 4 pasos */
 .kitchen-stepper {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -843,11 +1197,11 @@ pre:focus-visible {
 
 .kitchen-step {
   padding: 6px 8px;
-  border-radius: 4px;
+  border-radius: var(--r-pill);
   background-color: var(--p-surface);
   border: 1px solid var(--hairline);
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: 0.74rem;
+  font-weight: 600;
   color: var(--p-muted);
   text-align: center;
 }
@@ -855,22 +1209,20 @@ pre:focus-visible {
 .kitchen-step.done {
   background-color: var(--st-ready-bg);
   color: var(--st-ready-ink);
-  border-color: color-mix(in srgb, var(--st-ready-ink) 25%, transparent);
+  border-color: var(--p-green);
 }
 
 .kitchen-step.active {
-  background-color: var(--p-action);
-  color: var(--p-action-ink);
-  border-color: var(--p-action);
-  font-weight: 600;
+  background-color: var(--p-orange);
+  color: #FFFFFF;
+  border-color: var(--p-orange);
 }
 
 .status-badge {
-  font-family: var(--font-text);
-  font-size: 0.78rem;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 4px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--r-pill);
 }
 
 .status-RECEIVED {
@@ -901,7 +1253,7 @@ pre:focus-visible {
 .order-items-ul {
   margin: var(--s-3) 0;
   padding-inline-start: 1.2rem;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
 }
 
 .order-actions {
@@ -915,23 +1267,23 @@ pre:focus-visible {
   margin-block-start: var(--s-3);
   padding-block-start: var(--s-2);
   border-block-start: 1px solid var(--hairline);
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   color: var(--p-muted);
 }
 
 .history-details summary {
   cursor: pointer;
   font-weight: 600;
-  color: var(--p-ink);
+  color: var(--p-navy);
 }
 
 .history-details ul {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   margin-block-start: var(--s-2);
 }
 
-/* Notificaciones (Mini desplegable en el botón superior) y Toasts */
+/* Mini desplegable de Notificaciones */
 .notif-dropdown-wrap {
   position: relative;
   display: inline-flex;
@@ -953,6 +1305,7 @@ pre:focus-visible {
   border: 1px solid var(--hairline-strong);
   border-radius: var(--r-md);
   padding: var(--s-4);
+  box-shadow: 0 14px 34px rgba(3, 8, 31, 0.16);
 }
 
 .notif-dropdown-header {
@@ -973,12 +1326,12 @@ pre:focus-visible {
   min-width: 20px;
   height: 20px;
   padding: 0 6px;
-  border-radius: 4px;
-  background-color: var(--p-action);
-  color: var(--p-action-ink);
+  border-radius: var(--r-pill);
+  background-color: var(--p-orange);
+  color: #FFFFFF;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.74rem;
+  font-weight: 700;
 }
 
 .notifications-list {
@@ -998,11 +1351,11 @@ pre:focus-visible {
   border-radius: var(--r-sm);
   background-color: var(--p-bg);
   border: 1px solid var(--hairline);
-  font-size: 0.86rem;
+  font-size: 0.84rem;
 }
 
 .notif-item.unread {
-  border-inline-start: 3px solid var(--p-action);
+  border-inline-start: 3px solid var(--p-orange);
 }
 
 .notif-item-body strong {
@@ -1028,15 +1381,16 @@ pre:focus-visible {
 }
 
 .toast {
-  background-color: var(--p-inv-bg);
-  color: var(--p-inv-ink);
-  border-inline-start: 3px solid var(--p-action);
+  background-color: var(--p-navy);
+  color: #FFFFFF;
+  border-inline-start: 4px solid var(--p-orange);
   border-radius: var(--r-sm);
   padding: var(--s-3) var(--s-4);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
+  box-shadow: 0 10px 28px rgba(3, 8, 31, 0.25);
 }
 
-/* Dashboard Analítico en Vivo (Fase 6) */
+/* Dashboard Analítico en Vivo */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1053,7 +1407,7 @@ pre:focus-visible {
 .kpi-box {
   background-color: var(--p-bg);
   border: 1px solid var(--hairline);
-  border-radius: var(--r-sm);
+  border-radius: var(--r-md);
   padding: var(--s-4);
   display: flex;
   flex-direction: column;
@@ -1061,7 +1415,7 @@ pre:focus-visible {
 }
 
 .kpi-label {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--p-muted);
 }
@@ -1070,12 +1424,11 @@ pre:focus-visible {
   font-family: var(--font-display);
   font-size: 1.75rem;
   font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--p-ink);
+  color: var(--p-navy);
 }
 
 .kpi-meta {
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   color: var(--p-muted);
 }
 
@@ -1094,7 +1447,7 @@ pre:focus-visible {
 .chart-card {
   background-color: var(--p-bg);
   border: 1px solid var(--hairline);
-  border-radius: var(--r-sm);
+  border-radius: var(--r-md);
   padding: var(--s-4);
 }
 
