@@ -11,6 +11,7 @@ from app.core.config import settings
 from app.core.database import Base, SessionLocal, engine
 from app.core.seed import seed_initial_data
 from app.routers import auth, orders, products, stores, users
+from app.websocket import router as ws_router
 
 
 @asynccontextmanager
@@ -55,15 +56,16 @@ async def security_headers_middleware(request: Request, call_next) -> Response:
     return response
 
 
-# Registro de Routers REST (Fase 1)
+# Registro de Routers REST (Fase 1) y WebSocket (Fase 2)
 app.include_router(auth.router)
 app.include_router(stores.router)
 app.include_router(users.router)
 app.include_router(products.router)
 app.include_router(orders.router)
+app.include_router(ws_router.router)
 
 
 @app.get("/api/health", tags=["Sistema"])
 def health_check() -> dict[str, str]:
     """Endpoint de verificación de estado del servidor."""
-    return {"status": "ok", "phase": "1-rest-auth-rbac"}
+    return {"status": "ok", "phase": "2-websockets-rooms-broadcast"}
