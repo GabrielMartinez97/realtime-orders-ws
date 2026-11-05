@@ -1,24 +1,24 @@
 /**
  * Controlador de KPIs y gráficos en vivo con Chart.js (Fase 6).
- * Actualiza los datasets en memoria (chart.update()) sin recargar la página ni recrear el canvas.
+ * Paleta gastronómica cálida (Brasa & Masa — tasteskill 2.5 place deal).
  */
 
 const STATUS_ORDER = ["RECEIVED", "PREPARING", "READY", "DELIVERED", "CANCELLED"];
 const STATUS_LABELS_ES = [
   "Recibido",
-  "Preparando",
+  "En cocina",
   "Listo",
   "Entregado",
   "Cancelado",
 ];
 
-// Colores sobrios alineados con la paleta stone-blueprint (tasteskill 2.5)
+// Colores gastronómicos cálidos (terracota, horno ámbar, albahaca, cacao y carmín)
 const STATUS_BG_COLORS = [
-  "#2456d6", // RECEIVED (Blueprint Cobalt)
-  "#b4690e", // PREPARING (Warm Amber)
-  "#0f7647", // READY (Forest Green)
-  "#5a5850", // DELIVERED (Stone Muted Charcoal)
-  "#8f1d18", // CANCELLED (Brick Crimson)
+  "#c84628", // RECEIVED (Terracota Brasa)
+  "#d97706", // PREPARING (Ámbar Horno)
+  "#2d6a4f", // READY (Verde Albahaca)
+  "#6e645c", // DELIVERED (Cacao Piedra)
+  "#991b1b", // CANCELLED (Carmín)
 ];
 
 let statusChartInstance = null;
@@ -35,7 +35,7 @@ function ensureChartsInitialized() {
     return false;
   }
 
-  const fontFamily = '"Host Grotesk", system-ui, -apple-system, sans-serif';
+  const fontFamily = '"Figtree", system-ui, -apple-system, sans-serif';
   const monoFamily = '"JetBrains Mono", monospace';
 
   if (!statusChartInstance) {
@@ -45,10 +45,10 @@ function ensureChartsInitialized() {
         labels: STATUS_LABELS_ES,
         datasets: [
           {
-            label: "Pedidos",
+            label: "Órdenes",
             data: [0, 0, 0, 0, 0],
             backgroundColor: STATUS_BG_COLORS,
-            borderColor: "#ecebe7",
+            borderColor: "#ede5d6",
             borderWidth: 2,
           },
         ],
@@ -61,7 +61,7 @@ function ensureChartsInitialized() {
           legend: {
             position: "bottom",
             labels: {
-              color: "#26251e",
+              color: "#261b15",
               font: { family: fontFamily, size: 12 },
               boxWidth: 12,
               padding: 12,
@@ -81,7 +81,7 @@ function ensureChartsInitialized() {
           {
             label: "Ventas hoy ($)",
             data: [],
-            backgroundColor: "#2456d6",
+            backgroundColor: "#c84628",
             borderRadius: 6,
             maxBarThickness: 44,
           },
@@ -98,7 +98,7 @@ function ensureChartsInitialized() {
         scales: {
           x: {
             ticks: {
-              color: "#26251e",
+              color: "#261b15",
               font: { family: fontFamily, size: 12 },
             },
             grid: {
@@ -108,12 +108,12 @@ function ensureChartsInitialized() {
           y: {
             beginAtZero: true,
             ticks: {
-              color: "#5a5850",
+              color: "#6e645c",
               font: { family: monoFamily, size: 11 },
               callback: (val) => `$${val}`,
             },
             grid: {
-              color: "rgba(38, 37, 30, 0.1)",
+              color: "rgba(38, 27, 21, 0.1)",
             },
           },
         },
@@ -147,21 +147,19 @@ export function renderDashboardMetrics(metrics) {
     scopeBadgeEl.textContent =
       metrics.scope === "store" && metrics.store_name
         ? `${metrics.store_name} · En vivo`
-        : "Global · Todas las tiendas";
+        : "Global · Todas las sucursales";
   }
 
   if (!ensureChartsInitialized()) {
     return;
   }
 
-  // 1. Actualizar gráfico de Pedidos por Estado sin recargar
   const byStatus = metrics.orders_by_status || {};
   statusChartInstance.data.datasets[0].data = STATUS_ORDER.map(
     (st) => Number(byStatus[st] || 0)
   );
   statusChartInstance.update();
 
-  // 2. Actualizar gráfico de Ventas del Día por Sucursal sin recargar
   const storeItems = metrics.sales_by_store || [];
   storeSalesChartInstance.data.labels = storeItems.map((item) => item.store_name);
   storeSalesChartInstance.data.datasets[0].data = storeItems.map((item) =>

@@ -1,47 +1,47 @@
 /* ==========================================================================
-   tasteskill 2.5 — Deal: kind=software | palette=stone-blueprint | type=host
-   Tokens: 92% warm stone neutral (#dfdedb / #ebeae6), warm charcoal ink (#26251e),
-   single blueprint cobalt accent (#2456d6), 1px crisp hairlines, zero violet.
+   tasteskill 2.5 — Deal: kind=place | palette=artisan-kitchen | type=bricolage
+   Tokens: Warm parchment cream (#f6f1e7 / #ede5d6), espresso ink (#261b15),
+   single wood-fired terracotta accent (#c84628), 1px warm hairlines, zero violet.
    ========================================================================== */
 
 :root {
-  /* Paleta stone-blueprint (tasteskill 2.5) */
-  --p-bg: #dfdedb;
-  --p-surface: #ecebe7;
-  --p-surface-alt: #d3d2ce;
-  --p-ink: #26251e;
-  --p-muted: #5a5850;
-  --p-accent: #2456d6;
-  --p-accent-hover: #1c45b4;
+  /* Paleta gastronómica cálida (start.mjs brand --page place --type bricolage) */
+  --p-bg: #f6f1e7;
+  --p-surface: #ede5d6;
+  --p-surface-alt: #e2d7c3;
+  --p-ink: #261b15;
+  --p-muted: #6e645c;
+  --p-accent: #c84628;
+  --p-accent-hover: #ab371c;
   --p-accent-ink: #ffffff;
-  --p-action: #2456d6;
+  --p-action: #c84628;
   --p-action-ink: #ffffff;
 
-  /* Superficie inversa (Inspector técnico de tramas WS) */
-  --p-inv-bg: #26251e;
-  --p-inv-surface: #313029;
-  --p-inv-ink: #dfdedb;
-  --p-inv-muted: #9e9d99;
+  /* Superficie inversa (Espresso profundo para el inspector técnico) */
+  --p-inv-bg: #261b15;
+  --p-inv-surface: #322721;
+  --p-inv-ink: #f6f1e7;
+  --p-inv-muted: #a0988f;
 
-  /* Estados semánticos sobrios (sin neón ni violetas) */
-  --st-received-bg: #dce5fa;
-  --st-received-ink: #193ea8;
-  --st-preparing-bg: #f5e6c8;
-  --st-preparing-ink: #78490a;
-  --st-ready-bg: #d3ede0;
-  --st-ready-ink: #0f5736;
-  --st-delivered-bg: #d9d8d4;
-  --st-delivered-ink: #45443c;
-  --st-cancelled-bg: #f5d6d4;
+  /* Estados semánticos de cocina (cálidos y legibles) */
+  --st-received-bg: #fae1d8;
+  --st-received-ink: #9c2f15;
+  --st-preparing-bg: #f9e6c3;
+  --st-preparing-ink: #804806;
+  --st-ready-bg: #d4ece0;
+  --st-ready-ink: #145738;
+  --st-delivered-bg: #e3dcd1;
+  --st-delivered-ink: #4f463f;
+  --st-cancelled-bg: #f7d6d4;
   --st-cancelled-ink: #8f1d18;
 
   /* Hairlines a 14% de --p-ink */
   --hairline: color-mix(in srgb, var(--p-ink) 14%, transparent);
   --hairline-strong: color-mix(in srgb, var(--p-ink) 26%, transparent);
 
-  /* Tipografía Host Grotesk + JetBrains Mono */
-  --font-display: "Host Grotesk", system-ui, -apple-system, sans-serif;
-  --font-text: "Host Grotesk", system-ui, -apple-system, sans-serif;
+  /* Tipografía Bricolage Grotesque + Figtree + JetBrains Mono */
+  --font-display: "Bricolage Grotesque", system-ui, -apple-system, sans-serif;
+  --font-text: "Figtree", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
   /* Escala de espaciado (4, 8, 12, 16, 24, 32, 48, 64) */
@@ -54,7 +54,7 @@
   --s-7: 48px;
   --s-8: 64px;
 
-  /* Radios (data-radius="soft": 8 / 12 / 20) */
+  /* Radios (data-radius="soft": 8 / 12 / 16) */
   --r-sm: 8px;
   --r-md: 12px;
   --r-lg: 16px;
@@ -85,14 +85,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Contenedor con bordes izquierdo y derecho idénticos (Regla 4) */
 .wrap {
   max-width: 1360px;
   margin-inline: auto;
   padding-inline: var(--gut);
 }
 
-/* Barra superior fija de 72px con hairline de 1px (sin blur ni sombras flotantes) */
+/* Barra superior fija de 72px con hairline cálido de 1px */
 .topbar {
   position: sticky;
   top: 0;
@@ -121,14 +120,14 @@ body {
 }
 
 .brand-mark {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--r-sm);
-  background-color: var(--p-ink);
-  color: var(--p-bg);
+  background-color: var(--p-accent);
+  color: var(--p-accent-ink);
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 18px;
+  font-weight: 700;
+  font-size: 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -138,7 +137,7 @@ body {
 .topbar-brand h1 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: -0.03em;
   display: flex;
@@ -148,19 +147,19 @@ body {
 
 .subtitle {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   color: var(--p-muted);
 }
 
 .badge-tech {
-  font-family: var(--font-mono);
+  font-family: var(--font-text);
   font-size: 0.75rem;
-  font-weight: 500;
-  padding: 2px 8px;
+  font-weight: 600;
+  padding: 2px 10px;
   border-radius: 4px;
-  background-color: var(--p-surface-alt);
-  color: var(--p-ink);
-  border: 1px solid var(--hairline);
+  background-color: var(--st-received-bg);
+  color: var(--st-received-ink);
+  border: 1px solid color-mix(in srgb, var(--st-received-ink) 20%, transparent);
 }
 
 .session-bar {
@@ -190,7 +189,7 @@ body {
 }
 
 .ws-dot.connected {
-  background-color: #0f7647;
+  background-color: #145738;
 }
 
 .ws-dot.reconnecting {
@@ -217,22 +216,22 @@ body {
 
 .role-badge {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-weight: 500;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 4px;
   background-color: var(--p-ink);
   color: var(--p-bg);
 }
 
 .main-shell {
-  padding-block: var(--s-7);
+  padding-block: var(--s-6);
 }
 
-/* Split Hero de Autenticación */
+/* Split Hero Gastronómico */
 .auth-split {
   display: grid;
-  grid-template-columns: 1.08fr 0.92fr;
+  grid-template-columns: 1.12fr 0.88fr;
   gap: var(--s-7);
   align-items: start;
 }
@@ -245,24 +244,75 @@ body {
 }
 
 .eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  color: var(--p-muted);
-  margin: 0 0 var(--s-3);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--p-accent);
+  margin: 0 0 var(--s-2);
 }
 
 .hero-display {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 3.4vw, 3.1rem);
+  font-size: clamp(1.95rem, 3.1vw, 2.85rem);
   font-weight: 500;
   line-height: 1.08;
-  letter-spacing: -0.035em;
-  margin: 0 0 var(--s-6);
+  letter-spacing: -0.03em;
+  margin: 0 0 var(--s-5);
 }
 
 .hero-display .muted {
   color: var(--p-muted);
   font-weight: 400;
+}
+
+/* Galería fotográfica del Hero de Cocina */
+.culinary-hero-gallery {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: var(--s-3);
+  margin-block-end: var(--s-5);
+}
+
+@media (max-width: 640px) {
+  .culinary-hero-gallery {
+    grid-template-columns: 1fr;
+  }
+}
+
+.culinary-hero-main,
+.culinary-hero-side {
+  position: relative;
+  height: 230px;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+  background-color: var(--p-surface);
+}
+
+.culinary-hero-main img,
+.culinary-hero-side img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.culinary-hero-main:hover img,
+.culinary-hero-side:hover img {
+  transform: scale(1.03);
+}
+
+.hero-dish-tag {
+  position: absolute;
+  bottom: var(--s-3);
+  left: var(--s-3);
+  background-color: var(--p-bg);
+  color: var(--p-ink);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 
 .spec-rows {
@@ -272,11 +322,11 @@ body {
 
 .spec-row {
   display: grid;
-  grid-template-columns: 130px 1fr;
+  grid-template-columns: 140px 1fr;
   gap: var(--s-4);
-  padding-block: var(--s-4);
+  padding-block: var(--s-3);
   border-block-end: 1px solid var(--hairline);
-  font-size: 0.94rem;
+  font-size: 0.92rem;
 }
 
 .spec-row dt {
@@ -289,13 +339,7 @@ body {
   color: var(--p-muted);
 }
 
-.spec-row code {
-  font-family: var(--font-mono);
-  font-size: 0.84rem;
-  color: var(--p-ink);
-}
-
-/* Tarjetas: 1 sola receta en toda la página, borde de 1px, sin sombras pesadas */
+/* Tarjetas: 1 sola receta coherente en toda la página */
 .card {
   background-color: var(--p-surface);
   border: 1px solid var(--hairline);
@@ -308,9 +352,23 @@ body {
   margin-block-start: 0;
   margin-block-end: var(--s-2);
   font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 500;
+  font-size: 1.32rem;
+  font-weight: 600;
   letter-spacing: -0.025em;
+}
+
+.menu-panel-header {
+  padding-block-end: var(--s-3);
+  margin-block-end: var(--s-3);
+  border-block-end: 1px solid var(--hairline);
+}
+
+.menu-kicker {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--p-accent);
+  margin-block-end: 2px;
 }
 
 .card-inverse {
@@ -343,7 +401,7 @@ body {
 
 .section-label {
   font-size: 0.82rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--p-muted);
   margin: 0 0 var(--s-2);
 }
@@ -368,7 +426,7 @@ body {
   cursor: pointer;
   font-family: var(--font-text);
   font-size: 0.95rem;
-  font-weight: 500;
+  font-weight: 600;
   border-radius: var(--r-btn);
   padding: 0 var(--s-5);
   min-height: 44px;
@@ -413,7 +471,7 @@ body {
 }
 
 .btn-outline {
-  background-color: var(--p-surface);
+  background-color: var(--p-bg);
   border-color: var(--hairline-strong);
   color: var(--p-ink);
 }
@@ -452,13 +510,13 @@ body {
 }
 
 .btn-demo strong {
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 600;
 }
 
 .btn-demo span {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.76rem;
+  font-weight: 500;
   color: var(--p-muted);
 }
 
@@ -477,7 +535,7 @@ body {
 
 label {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--p-ink);
 }
 
@@ -514,15 +572,15 @@ pre:focus-visible {
   font-size: 0.88rem;
 }
 
-/* Grid Principal del Workspace */
+/* Grid Principal del Workspace: carta amplia de 480px a la izquierda */
 .workspace-grid {
   display: grid;
-  grid-template-columns: 420px 1fr;
+  grid-template-columns: 480px 1fr;
   gap: var(--s-5);
   align-items: start;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1080px) {
   .workspace-grid {
     grid-template-columns: 1fr;
   }
@@ -541,11 +599,11 @@ pre:focus-visible {
   border-block-end: 1px solid var(--hairline);
 }
 
-/* Catálogo de productos con reglas divisorias limpias (.rows) */
+/* Carta gastronómica de platos (.catalog-list) */
 .catalog-list {
   display: flex;
   flex-direction: column;
-  border-block-start: 1px solid var(--hairline);
+  gap: var(--s-3);
 }
 
 .catalog-item {
@@ -553,24 +611,33 @@ pre:focus-visible {
   justify-content: space-between;
   align-items: center;
   gap: var(--s-3);
-  padding-block: var(--s-3);
-  border-block-end: 1px solid var(--hairline);
+  padding: var(--s-3);
+  background-color: var(--p-bg);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+  transition: border-color 0.16s ease, transform 0.16s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.catalog-item:hover {
+  border-color: var(--hairline-strong);
+  transform: translateY(-1px);
 }
 
 .catalog-item-info {
   display: flex;
   align-items: center;
-  gap: var(--s-4);
+  gap: var(--s-3);
+  min-width: 0;
 }
 
 .catalog-photo-frame {
-  width: 120px;
-  height: 90px;
+  width: 124px;
+  height: 94px;
   flex-shrink: 0;
   border-radius: var(--r-sm);
   overflow: hidden;
   border: 1px solid var(--hairline);
-  background-color: var(--p-bg);
+  background-color: var(--p-surface);
 }
 
 .catalog-thumb {
@@ -582,13 +649,39 @@ pre:focus-visible {
 }
 
 .catalog-item:hover .catalog-thumb {
-  transform: scale(1.03);
+  transform: scale(1.04);
+}
+
+.dish-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin-block-end: 4px;
 }
 
 .catalog-item-info strong {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--p-ink);
+}
+
+.dish-price-pill {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background-color: var(--st-received-bg);
+  color: var(--st-received-ink);
+}
+
+.catalog-item-info span.dish-desc {
   display: block;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--p-muted);
 }
 
 .admin-upload-box {
@@ -602,25 +695,15 @@ pre:focus-visible {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--s-2);
-  margin-block-top: var(--s-3);
-  padding-block-top: var(--s-2);
-}
-
-.receipt-file-input {
-  font-size: 0.82rem;
-  min-height: 36px;
-  padding: 4px 8px;
-}
-
-.catalog-item-info span {
-  font-size: 0.82rem;
-  color: var(--p-muted);
+  margin-block-start: var(--s-3);
+  padding-block-start: var(--s-2);
 }
 
 .qty-controls {
   display: flex;
   align-items: center;
-  gap: var(--s-2);
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .qty-btn {
@@ -629,16 +712,19 @@ pre:focus-visible {
   min-height: 34px;
   padding: 0;
   border-radius: var(--r-sm);
-  background-color: var(--p-bg);
+  background-color: var(--p-surface);
   border: 1px solid var(--hairline-strong);
   color: var(--p-ink);
   font-family: var(--font-mono);
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
 }
 
 .qty-btn:hover {
-  background-color: var(--p-surface-alt);
+  background-color: var(--p-action);
+  border-color: var(--p-action);
+  color: var(--p-action-ink);
 }
 
 .qty-value {
@@ -655,12 +741,25 @@ pre:focus-visible {
   padding: var(--s-3) var(--s-4);
   border-radius: var(--r-sm);
   background-color: var(--p-bg);
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--hairline-strong);
+}
+
+.cart-summary-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.cart-summary-sub {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--p-muted);
 }
 
 .cart-summary strong {
-  font-family: var(--font-mono);
-  font-size: 1.15rem;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 700;
   color: var(--p-action);
 }
 
@@ -700,7 +799,7 @@ pre:focus-visible {
   word-break: break-word;
 }
 
-/* Tarjetas de Pedidos */
+/* Tarjetas de Pedidos y Comandas */
 .orders-list {
   display: flex;
   flex-direction: column;
@@ -734,10 +833,42 @@ pre:focus-visible {
   border-block-end: 1px solid var(--hairline);
 }
 
-.status-badge {
-  font-family: var(--font-mono);
-  font-size: 0.76rem;
+/* Barra visual de progreso de cocina en 4 pasos */
+.kitchen-stepper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-block: var(--s-3);
+}
+
+.kitchen-step {
+  padding: 6px 8px;
+  border-radius: 4px;
+  background-color: var(--p-surface);
+  border: 1px solid var(--hairline);
+  font-size: 0.75rem;
   font-weight: 500;
+  color: var(--p-muted);
+  text-align: center;
+}
+
+.kitchen-step.done {
+  background-color: var(--st-ready-bg);
+  color: var(--st-ready-ink);
+  border-color: color-mix(in srgb, var(--st-ready-ink) 25%, transparent);
+}
+
+.kitchen-step.active {
+  background-color: var(--p-action);
+  color: var(--p-action-ink);
+  border-color: var(--p-action);
+  font-weight: 600;
+}
+
+.status-badge {
+  font-family: var(--font-text);
+  font-size: 0.78rem;
+  font-weight: 600;
   padding: 4px 10px;
   border-radius: 4px;
 }
@@ -790,7 +921,7 @@ pre:focus-visible {
 
 .history-details summary {
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--p-ink);
 }
 
@@ -905,7 +1036,7 @@ pre:focus-visible {
   font-size: 0.88rem;
 }
 
-/* Dashboard Analítico en Vivo (Fase 6 — tasteskill stone-blueprint) */
+/* Dashboard Analítico en Vivo (Fase 6) */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -931,14 +1062,14 @@ pre:focus-visible {
 
 .kpi-label {
   font-size: 0.82rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--p-muted);
 }
 
 .kpi-value {
-  font-family: var(--font-mono);
-  font-size: 1.65rem;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
   letter-spacing: -0.03em;
   color: var(--p-ink);
 }

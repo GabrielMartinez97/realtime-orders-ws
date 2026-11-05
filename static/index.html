@@ -1,25 +1,26 @@
 <!DOCTYPE html>
-<html lang="es" data-type="software" data-radius="soft" data-buttons="solid" data-motion="on">
+<html lang="es" data-type="place" data-radius="soft" data-buttons="solid" data-motion="on">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="page-type" content="software">
-  <meta name="site-kind" content="software">
-  <title>Kinetix Orders — Sistema de Pedidos en Tiempo Real</title>
+  <meta name="page-type" content="place">
+  <meta name="site-kind" content="other">
+  <meta name="page-kind" content="place">
+  <title>Brasa &amp; Masa — Cocina Artesanal y Pedidos en Tiempo Real</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400..700&family=JetBrains+Mono:wght@400..500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..700&family=Figtree:wght@400..600&family=JetBrains+Mono:wght@400..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
-  <!-- deal: kind=software palette=stone-blueprint type=host radius=soft -->
+  <!-- deal: kind=place palette=artisan-kitchen (#f6f1e7 / #261b15 / #c84628) type=bricolage radius=soft -->
   <header class="topbar">
     <div class="wrap topbar-inner">
       <div class="topbar-brand">
-        <span class="brand-mark" aria-hidden="true">K</span>
+        <span class="brand-mark" aria-hidden="true">BM</span>
         <div>
-          <h1>Kinetix Orders <span class="badge-tech">ws://realtime</span></h1>
-          <p class="subtitle">Despacho y trazabilidad multi-tienda sobre WebSockets nativos</p>
+          <h1>Brasa &amp; Masa <span class="badge-tech">Cocina en vivo</span></h1>
+          <p class="subtitle">Smash burgers al hierro, pizzas de masa madre 48h y despacho en tiempo real</p>
         </div>
       </div>
 
@@ -70,59 +71,81 @@
     <!-- Contenedor de alertas y toasts en vivo -->
     <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-    <!-- VISTA 1: HERO EDITORIAL + ACCESO RÁPIDO DEMO -->
+    <!-- VISTA 1: HERO GASTRONÓMICO EDITORIAL + ACCESO RÁPIDO -->
     <section id="auth-section" class="auth-split">
       <div class="auth-editorial">
-        <p class="eyebrow">Arquitectura orientada a eventos · FastAPI + SQLAlchemy 2.0</p>
+        <p class="eyebrow">Cocina artesanal multi-sucursal · Sucursal Centro &amp; Sucursal Norte</p>
         <h2 class="hero-display">
-          Cada pedido sincronizado en menos de 15&nbsp;ms.
-          <span class="muted">Sin recargas, sin polling y validado en el servidor.</span>
+          Recién salido de la plancha y del horno de barro.
+          <span class="muted">Sigue tu pedido en vivo desde que entra a cocina hasta tus manos.</span>
         </h2>
+
+        <div class="culinary-hero-gallery">
+          <div class="culinary-hero-main">
+            <img
+              src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80"
+              alt="Hamburguesa Doble Smash artesanal con cheddar fundido"
+              width="640"
+              height="400"
+            >
+            <span class="hero-dish-tag">Sucursal Centro · Doble Smash Burger</span>
+          </div>
+          <div class="culinary-hero-side">
+            <img
+              src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=700&q=80"
+              alt="Pizza Napolitana de masa madre recién horneada"
+              width="420"
+              height="400"
+            >
+            <span class="hero-dish-tag">Sucursal Norte · Napolitana 48h</span>
+          </div>
+        </div>
+
         <dl class="spec-rows">
           <div class="spec-row">
-            <dt>Transporte</dt>
-            <dd>WebSockets RFC 6455 con Heartbeat <code>ping/pong</code> y Backoff Exponencial</dd>
+            <dt>Sucursal Centro</dt>
+            <dd>Av. Libertador · Especialidad en Smash Burgers al hierro, papas rústicas al romero y limonadas</dd>
           </div>
           <div class="spec-row">
-            <dt>Aislamiento</dt>
-            <dd>Salas dedicadas <code>user:{id}</code>, <code>store:{id}</code> y <code>admin:global</code></dd>
+            <dt>Sucursal Norte</dt>
+            <dd>Boulevard del Parque · Pizzas napolitanas de fermentación 48h y empanadas al barro</dd>
           </div>
           <div class="spec-row">
-            <dt>Seguridad</dt>
-            <dd>JWT HS256, Bcrypt 12 rondas, control RBAC + Anti-IDOR y validación de Origin</dd>
+            <dt>Cocina en vivo</dt>
+            <dd>Actualización instantánea por WebSockets cuando el chef recibe, prepara y despacha tu orden</dd>
           </div>
         </dl>
       </div>
 
       <div class="card auth-card">
-        <h2>Entrar al panel operativo</h2>
+        <h2>Entrar a pedir o gestionar cocina</h2>
         <p class="muted">
-          Abre dos pestañas lado a lado e inicia sesión con distintos roles para ver los pedidos
-          cruzar en vivo por el canal WebSocket.
+          Elige un perfil de demostración con un clic para explorar la carta como cliente o despachar
+          pedidos desde la cocina en tiempo real.
         </p>
 
         <div class="demo-accounts">
-          <p class="section-label">Cuentas de demostración (1 clic)</p>
+          <p class="section-label">Accesos rápidos de demostración (1 clic)</p>
           <div class="demo-grid" id="demo-buttons-grid">
             <button type="button" class="btn btn-demo" data-email="ana@cliente.com" data-pass="Cliente123!">
               <strong>Ana Gómez</strong>
-              <span>CUSTOMER · Cliente 1</span>
+              <span>CLIENTE · Pedir comida</span>
             </button>
             <button type="button" class="btn btn-demo" data-email="carlos@cliente.com" data-pass="Cliente123!">
               <strong>Carlos Ruiz</strong>
-              <span>CUSTOMER · Cliente 2</span>
+              <span>CLIENTE · Pedir comida</span>
             </button>
             <button type="button" class="btn btn-demo" data-email="operador.centro@tiendas.com" data-pass="Operador123!">
-              <strong>Operador Centro</strong>
-              <span>OPERATOR · Sucursal #1</span>
+              <strong>Cocina Centro</strong>
+              <span>OPERADOR · Sucursal #1</span>
             </button>
             <button type="button" class="btn btn-demo" data-email="operador.norte@tiendas.com" data-pass="Operador123!">
-              <strong>Operador Norte</strong>
-              <span>OPERATOR · Sucursal #2</span>
+              <strong>Cocina Norte</strong>
+              <span>OPERADOR · Sucursal #2</span>
             </button>
             <button type="button" class="btn btn-demo" data-email="admin@tiendas.com" data-pass="Admin123!">
               <strong>Administrador General</strong>
-              <span>ADMIN · Vista global</span>
+              <span>ADMIN · Carta y analítica</span>
             </button>
           </div>
         </div>
@@ -157,37 +180,46 @@
 
           <p id="login-error" class="form-error" role="alert" hidden></p>
           <button type="submit" id="login-submit-btn" class="btn btn-primary">
-            Abrir sesión operativa
+            Entrar a Brasa &amp; Masa
           </button>
         </form>
       </div>
     </section>
 
-    <!-- VISTA 2: PANEL DE TRABAJO EN TIEMPO REAL -->
+    <!-- VISTA 2: PANEL DE PEDIDOS Y COCINA EN TIEMPO REAL -->
     <section id="workspace-section" class="workspace-grid" hidden>
-      <!-- Columna Izquierda: Acción según Rol + Notificaciones + Monitor WS -->
+      <!-- Columna Izquierda: Carta / Creación de Pedido (Cliente) o Control de Sucursal (Staff) -->
       <div class="workspace-sidebar">
         <!-- Panel de Creación de Pedido (Solo visible para CUSTOMER) -->
         <section id="customer-order-panel" class="card" hidden>
-          <h2>Emitir nuevo pedido</h2>
+          <div class="menu-panel-header">
+            <span class="menu-kicker">Carta del día · Preparación al momento</span>
+            <h2>Armar mi pedido</h2>
+          </div>
           <form id="create-order-form" action="/api/orders" method="POST" class="form-stack">
             <div class="form-group">
-              <label for="store-select">Sucursal de despacho</label>
+              <label for="store-select">Elige tu sucursal más cercana</label>
               <select id="store-select" name="store_id" required></select>
             </div>
 
             <div class="form-group">
-              <label>Catálogo disponible</label>
+              <label>Platos y bebidas disponibles</label>
               <div id="catalog-list" class="catalog-list"></div>
             </div>
 
             <div class="form-group">
-              <label for="order-notes">Instrucciones de entrega (opcional)</label>
-              <textarea id="order-notes" name="notes" rows="2" maxlength="500"></textarea>
+              <label for="order-notes">Notas para la cocina (punto de cocción, sin cebolla, etc.)</label>
+              <textarea
+                id="order-notes"
+                name="notes"
+                rows="2"
+                maxlength="500"
+                placeholder="Ej. Sin pepinillos, salsa aparte..."
+              ></textarea>
             </div>
 
             <div class="form-group">
-              <label for="order-receipt-file">Comprobante de pago (opcional · .png, .jpg, .pdf &le; 2 MB)</label>
+              <label for="order-receipt-file">Comprobante de transferencia (opcional · .png, .jpg, .pdf &le; 2 MB)</label>
               <input
                 type="file"
                 id="order-receipt-file"
@@ -197,40 +229,43 @@
             </div>
 
             <div class="cart-summary">
-              <span>Total calculado en servidor</span>
+              <div>
+                <span class="cart-summary-label">Total de tu orden</span>
+                <small class="cart-summary-sub">Precios verificados en cocina</small>
+              </div>
               <strong id="cart-total-label">$0.00</strong>
             </div>
 
             <p id="order-form-error" class="form-error" role="alert" hidden></p>
             <button type="submit" id="create-order-submit" class="btn btn-primary">
-              Confirmar y transmitir pedido
+              Enviar pedido a cocina
             </button>
           </form>
         </section>
 
-        <!-- Panel de Filtro e Información de Sala (Para OPERATOR y ADMIN) -->
+        <!-- Panel de Filtro e Información de Sala (Solo para OPERATOR y ADMIN) -->
         <section id="staff-info-panel" class="card" hidden>
-          <h2>Suscripción de canales</h2>
+          <h2>Control de sucursal y carta</h2>
           <p id="staff-scope-description" class="muted"></p>
           <div id="admin-store-filter-box" class="form-group" hidden>
-            <label for="admin-store-filter">Inspeccionar sucursal</label>
+            <label for="admin-store-filter">Filtrar por sucursal</label>
             <select id="admin-store-filter" name="store_filter">
-              <option value="">Todas las tiendas (Global)</option>
+              <option value="">Todas las sucursales (Vista global)</option>
             </select>
           </div>
           <div class="rooms-box">
-            <p class="section-label">Salas WebSocket conectadas</p>
+            <p class="section-label">Canales WebSocket activos</p>
             <ul id="active-rooms-list" class="rooms-list"></ul>
           </div>
 
           <form id="admin-image-form" class="form-stack admin-upload-box" hidden>
-            <p class="section-label">Subir imagen de producto (Admin · Magic Bytes &le; 2 MB)</p>
+            <p class="section-label">Actualizar fotografía de plato (Admin · Magic Bytes &le; 2 MB)</p>
             <div class="form-group">
-              <label for="admin-product-select">Producto</label>
+              <label for="admin-product-select">Plato o bebida</label>
               <select id="admin-product-select" name="product_id" required></select>
             </div>
             <div class="form-group">
-              <label for="admin-product-file">Imagen (.png, .jpg, .webp)</label>
+              <label for="admin-product-file">Fotografía (.png, .jpg, .webp)</label>
               <input
                 type="file"
                 id="admin-product-file"
@@ -240,7 +275,7 @@
               >
             </div>
             <button type="submit" id="admin-image-submit" class="btn btn-primary btn-sm">
-              Validar y guardar imagen
+              Subir y actualizar foto del plato
             </button>
             <div id="admin-catalog-preview" class="catalog-list"></div>
           </form>
@@ -259,38 +294,38 @@
         </section>
       </div>
 
-      <!-- Columna Derecha: Dashboard en Vivo (Admin/Operador) + Tablero de Pedidos -->
+      <!-- Columna Derecha: Dashboard en Vivo (Admin/Operador) + Comandas / Pedidos -->
       <div class="workspace-main">
         <section id="dashboard-panel" class="card" hidden>
           <div class="card-header-inline board-header">
             <div>
-              <h2>Dashboard analítico en vivo</h2>
-              <p class="muted small">Actualizado automáticamente por eventos WebSocket sin recargar</p>
+              <h2>Rendimiento de cocina en vivo</h2>
+              <p class="muted small">Métricas actualizadas en tiempo real por WebSocket sin recargar</p>
             </div>
             <span id="dashboard-scope-badge" class="badge-tech">En vivo</span>
           </div>
 
           <div class="kpi-grid">
             <div class="kpi-box">
-              <span class="kpi-label">Pedidos activos en curso</span>
+              <span class="kpi-label">Comandas activas en cocina</span>
               <strong id="kpi-active-orders" class="kpi-value">0</strong>
-              <span class="kpi-meta">Recibidos · Preparando · Listos</span>
+              <span class="kpi-meta">Recibidos · En preparación · Listos</span>
             </div>
             <div class="kpi-box">
-              <span class="kpi-label">Ventas del día (UTC)</span>
+              <span class="kpi-label">Ventas del día</span>
               <strong id="kpi-today-sales" class="kpi-value">$0.00</strong>
-              <span class="kpi-meta">Excluye pedidos cancelados</span>
+              <span class="kpi-meta">Excluye órdenes canceladas</span>
             </div>
             <div class="kpi-box">
-              <span class="kpi-label">Tiempo prom. preparación</span>
+              <span class="kpi-label">Tiempo prom. de cocción</span>
               <strong id="kpi-avg-prep" class="kpi-value">0.0 min</strong>
-              <span class="kpi-meta">Desde recibido hasta listo</span>
+              <span class="kpi-meta">Desde recibido hasta listo para entrega</span>
             </div>
           </div>
 
           <div class="charts-grid">
             <div class="chart-card">
-              <p class="section-label">Pedidos por estado</p>
+              <p class="section-label">Órdenes por etapa de cocina</p>
               <div class="chart-canvas-wrap">
                 <canvas id="chart-orders-status" aria-label="Gráfico de pedidos por estado"></canvas>
               </div>
@@ -307,7 +342,7 @@
         <section class="card">
           <div class="card-header-inline board-header">
             <div>
-              <h2 id="orders-board-title"> Flujo de pedidos en vivo</h2>
+              <h2 id="orders-board-title">Flujo de comandas en vivo</h2>
               <p id="resync-timestamp" class="muted small mono-meta"></p>
             </div>
             <button type="button" id="btn-manual-resync" class="btn btn-outline btn-sm">

@@ -8,12 +8,35 @@ import { renderDashboardMetrics } from "./dashboard_charts.js";
 import { RealtimeWSClient } from "./ws_client.js";
 
 const STATUS_LABELS = {
-  RECEIVED: "Recibido",
-  PREPARING: "Preparando",
+  RECEIVED: "Recibido en cocina",
+  PREPARING: "En preparación",
   READY: "Listo para retirar",
   DELIVERED: "Entregado",
   CANCELLED: "Cancelado",
 };
+
+const KITCHEN_STEPS = [
+  { key: "RECEIVED", label: "1. Recibido" },
+  { key: "PREPARING", label: "2. En cocina" },
+  { key: "READY", label: "3. Listo" },
+  { key: "DELIVERED", label: "4. Entregado" },
+];
+
+const DEFAULT_FOOD_PHOTOS_BY_ID = {
+  1: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80",
+  2: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=600&q=80",
+  3: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80",
+  4: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=600&q=80",
+  5: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80",
+  6: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=600&q=80",
+};
+
+function getProductImageUrl(prod) {
+  if (prod.image_path) {
+    return `/api/files/products/${encodeURIComponent(prod.image_path)}`;
+  }
+  return DEFAULT_FOOD_PHOTOS_BY_ID[prod.id] || DEFAULT_FOOD_PHOTOS_BY_ID[1];
+}
 
 const NEXT_OPERATOR_ACTIONS = {
   RECEIVED: [
@@ -364,6 +387,24 @@ function renderOrdersList(highlightOrderId = null) {
     header.append(titleGroup, badge);
     card.appendChild(header);
 
+    if (order.status !== "CANCELLED") {
+      const stepper = document.createElement("div");
+      stepper.className = "kitchen-stepper";
+      const currentIdx = KITCHEN_STEPS.findIndex((s) => s.key === order.status);
+      KITCHEN_STEPS.forEach((step, idx) => {
+        const stepEl = document.createElement("div");
+        stepEl.className = "kitchen-step";
+        if (idx < currentIdx || order.status === "DELIVERED") {
+          stepEl.classList.add("done");
+        } else if (idx === currentIdx) {
+          stepEl.classList.add("active");
+        }
+        stepEl.textContent = step.label;
+        stepper.appendChild(stepEl);
+      });
+      card.appendChild(stepper);
+    }
+
     const ul = document.createElement("ul");
     ul.className = "order-items-ul";
     for (const item of order.items || []) {
@@ -485,25 +526,34 @@ function renderCatalog() {
 
     const info = document.createElement("div");
     info.className = "catalog-item-info";
-    if (prod.image_path) {
-      const frame = document.createElement("div");
-      frame.className = "catalog-photo-frame";
-      const img = document.createElement("img");
-      img.className = "catalog-thumb";
-      img.src = `/api/files/products/${encodeURIComponent(prod.image_path)}`;
-      img.alt = prod.name;
-      img.width = 120;
-      img.height = 90;
-      img.loading = "lazy";
-      frame.appendChild(img);
-      info.appendChild(frame);
-    }
+
+    const frame = document.createElement("div");
+    frame.className = "catalog-photo-frame";
+    const img = document.createElement("img");
+    img.className = "catalog-thumb";
+    img.src = getProductImageUrl(prod);
+    img.alt = prod.name;
+    img.width = 124;
+    img.height = 94;
+    img.loading = "lazy";
+    frame.appendChild(img);
+    info.appendChild(frame);
+
     const textWrap = document.createElement("div");
+    const titleRow = document.createElement("div");
+    titleRow.className = "dish-title-row";
+
     const nameEl = document.createElement("strong");
-    nameEl.textContent = `${prod.name} ($${prod.price})`;
+    nameEl.textContent = prod.name;
+    const pricePill = document.createElement("span");
+    pricePill.className = "dish-price-pill";
+    pricePill.textContent = `$${prod.price}`;
+    titleRow.append(nameEl, pricePill);
+
     const descEl = document.createElement("span");
+    descEl.className = "dish-desc";
     descEl.textContent = prod.description || "";
-    textWrap.append(nameEl, descEl);
+    textWrap.append(titleRow, descEl);
     info.appendChild(textWrap);
 
     const controls = document.createElement("div");
@@ -556,34 +606,35 @@ function renderAdminCatalogPreview(products) {
     opt.textContent = `#${p.id} · ${p.name} (${getStoreName(p.store_id)})`;
     adminProductSelect.appendChild(opt);
 
-    if (p.image_path) {
-      const row = document.createElement("div");
-      row.className = "catalog-item";
-      const info = document.createElement("div");
-      info.className = "catalog-item-info";
+    const row = document.createElement("div");
+    row.className = "catalog-item";
+    const info = document.createElement("div");
+    info.className = "catalog-item-info";
 
-      const frame = document.createElement("div");
-      frame.className = "catalog-photo-frame";
-      const img = document.createElement("img");
-      img.className = "catalog-thumb";
-      img.src = `/api/files/products/${encodeURIComponent(p.image_path)}`;
-      img.alt = p.name;
-      img.width = 120;
-      img.height = 90;
-      img.loading = "lazy";
-      frame.appendChild(img);
+    const frame = document.createElement("div");
+    frame.className = "catalog-photo-frame";
+    const img = document.createElement("img");
+    img.className = "catalog-thumb";
+    img.src = getProductImageUrl(p);
+    img.alt = p.name;
+    img.width = 124;
+    img.height = 94;
+    img.loading = "lazy";
+    frame.appendChild(img);
 
-      const textWrap = document.createElement("div");
-      const nameEl = document.createElement("strong");
-      nameEl.textContent = p.name;
-      const storeEl = document.createElement("span");
-      storeEl.textContent = `${getStoreName(p.store_id)} · ${p.image_path}`;
-      textWrap.append(nameEl, storeEl);
+    const textWrap = document.createElement("div");
+    const nameEl = document.createElement("strong");
+    nameEl.textContent = p.name;
+    const storeEl = document.createElement("span");
+    storeEl.className = "dish-desc";
+    storeEl.textContent = p.image_path
+      ? `${getStoreName(p.store_id)} · Foto personalizada (${p.image_path})`
+      : `${getStoreName(p.store_id)} · Foto gastronómica de carta`;
+    textWrap.append(nameEl, storeEl);
 
-      info.append(frame, textWrap);
-      row.appendChild(info);
-      adminCatalogPreview.appendChild(row);
-    }
+    info.append(frame, textWrap);
+    row.appendChild(info);
+    adminCatalogPreview.appendChild(row);
   }
 
   if (currentSelected) {
