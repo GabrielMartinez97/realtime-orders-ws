@@ -171,6 +171,16 @@
               <textarea id="order-notes" name="notes" rows="2" maxlength="500"></textarea>
             </div>
 
+            <div class="form-group">
+              <label for="order-receipt-file">Comprobante de pago (opcional · .png, .jpg, .pdf &le; 2 MB)</label>
+              <input
+                type="file"
+                id="order-receipt-file"
+                name="receipt_file"
+                accept=".png,.jpg,.jpeg,.webp,.pdf"
+              >
+            </div>
+
             <div class="cart-summary">
               <span>Total calculado en servidor</span>
               <strong id="cart-total-label">$0.00</strong>

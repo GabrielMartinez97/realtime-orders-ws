@@ -72,6 +72,7 @@ const customerOrderPanel = document.getElementById("customer-order-panel");
 const storeSelect = document.getElementById("store-select");
 const catalogList = document.getElementById("catalog-list");
 const orderNotes = document.getElementById("order-notes");
+const orderReceiptFile = document.getElementById("order-receipt-file");
 const cartTotalLabel = document.getElementById("cart-total-label");
 const createOrderForm = document.getElementById("create-order-form");
 const createOrderSubmit = document.getElementById("create-order-submit");
@@ -419,16 +420,18 @@ function renderOrdersList(highlightOrderId = null) {
       viewLink.rel = "noopener";
       viewLink.textContent = "Ver comprobante validado";
       receiptBar.appendChild(viewLink);
-    }
+    } else if (state.user.role === "CUSTOMER" && order.status === "RECEIVED") {
+      const uploadLabel = document.createElement("label");
+      uploadLabel.className = "btn btn-outline btn-sm";
+      uploadLabel.textContent = "Adjuntar comprobante de pago";
 
-    if (state.user.role === "CUSTOMER" && order.status !== "CANCELLED") {
       const fileInput = document.createElement("input");
       fileInput.type = "file";
-      fileInput.className = "receipt-file-input";
+      fileInput.hidden = true;
       fileInput.accept = ".png,.jpg,.jpeg,.webp,.pdf";
       fileInput.dataset.receiptOrderId = String(order.id);
-      fileInput.setAttribute("aria-label", `Subir comprobante para pedido #${order.id}`);
-      receiptBar.appendChild(fileInput);
+      uploadLabel.appendChild(fileInput);
+      receiptBar.appendChild(uploadLabel);
     }
 
     if (receiptBar.childElementCount > 0) {
@@ -740,7 +743,12 @@ createOrderForm.addEventListener("submit", async (e) => {
       notes: orderNotes.value.trim() || null,
       items,
     });
-    upsertOrderInMemory(created, true);
+    let finalOrder = created;
+    if (orderReceiptFile && orderReceiptFile.files && orderReceiptFile.files.length > 0) {
+      finalOrder = await api.uploadOrderReceipt(created.id, orderReceiptFile.files[0]);
+      orderReceiptFile.value = "";
+    }
+    upsertOrderInMemory(finalOrder, true);
     state.cart = {};
     orderNotes.value = "";
     renderCatalog();

@@ -16,7 +16,7 @@ from app.core.security import (
     require_roles,
 )
 from app.models.notification import Notification
-from app.models.order import Order
+from app.models.order import Order, OrderStatus
 from app.models.product import Product
 from app.models.user import User, UserRole
 from app.routers.orders import get_order_target_rooms
@@ -105,6 +105,11 @@ async def upload_order_payment_receipt(
 ) -> Order:
     """Permite al Cliente dueño del pedido subir un comprobante de pago validado (PNG/JPG/WEBP/PDF <= 2 MB)."""
     order = order_service.get_order_for_user(db, user=customer, order_id=order_id)
+    if order.status != OrderStatus.RECEIVED:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Solo se puede adjuntar comprobante de pago a pedidos en estado RECEIVED.",
+        )
 
     filename, _mime = await file_service.validate_and_save_upload(
         file,
