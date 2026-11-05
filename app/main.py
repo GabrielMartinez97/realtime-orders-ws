@@ -13,7 +13,7 @@ import app.models  # noqa: F401 - Registra todos los modelos en Base.metadata
 from app.core.config import settings
 from app.core.database import Base, SessionLocal, engine
 from app.core.seed import seed_initial_data
-from app.routers import auth, notifications, orders, products, stores, users
+from app.routers import auth, files, notifications, orders, products, stores, users
 from app.websocket import router as ws_router
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -69,6 +69,7 @@ app.include_router(users.router)
 app.include_router(products.router)
 app.include_router(orders.router)
 app.include_router(notifications.router)
+app.include_router(files.router)
 app.include_router(ws_router.router)
 
 # Montaje de archivos estáticos del Frontend Vanilla
@@ -85,4 +86,4 @@ def serve_frontend() -> FileResponse:
 @app.get("/api/health", tags=["Sistema"])
 def health_check() -> dict[str, str]:
     """Endpoint de verificación de estado del servidor."""
-    return {"status": "ok", "phase": "4-notifications"}
+    return {"status": "ok", "phase": "5-secure-file-uploads"}

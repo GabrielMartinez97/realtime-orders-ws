@@ -96,4 +96,35 @@ export class ApiClient {
       method: "POST",
     });
   }
+
+  async uploadFile(path, file) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const headers = {};
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`;
+    }
+
+    const response = await fetch(path, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const errorMsg = data.detail || `Error HTTP ${response.status}`;
+      throw new Error(typeof errorMsg === "string" ? errorMsg : JSON.stringify(errorMsg));
+    }
+    return data;
+  }
+
+  uploadProductImage(productId, file) {
+    return this.uploadFile(`/api/files/products/${encodeURIComponent(productId)}/image`, file);
+  }
+
+  uploadOrderReceipt(orderId, file) {
+    return this.uploadFile(`/api/files/orders/${encodeURIComponent(orderId)}/receipt`, file);
+  }
 }

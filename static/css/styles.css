@@ -553,10 +553,46 @@ pre:focus-visible {
   border-block-end: 1px solid var(--hairline);
 }
 
+.catalog-item-info {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.catalog-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-sm);
+  object-fit: cover;
+  border: 1px solid var(--hairline);
+  background-color: var(--p-bg);
+}
+
 .catalog-item-info strong {
   display: block;
   font-size: 0.95rem;
   font-weight: 500;
+}
+
+.admin-upload-box {
+  margin-block-start: var(--s-4);
+  padding-block-start: var(--s-4);
+  border-block-start: 1px solid var(--hairline);
+}
+
+.receipt-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin-block-top: var(--s-3);
+  padding-block-top: var(--s-2);
+}
+
+.receipt-file-input {
+  font-size: 0.82rem;
+  min-height: 36px;
+  padding: 4px 8px;
 }
 
 .catalog-item-info span {

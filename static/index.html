@@ -197,6 +197,27 @@
             <p class="section-label">Salas WebSocket conectadas</p>
             <ul id="active-rooms-list" class="rooms-list"></ul>
           </div>
+
+          <form id="admin-image-form" class="form-stack admin-upload-box" hidden>
+            <p class="section-label">Subir imagen de producto (Admin · Magic Bytes &le; 2 MB)</p>
+            <div class="form-group">
+              <label for="admin-product-select">Producto</label>
+              <select id="admin-product-select" name="product_id" required></select>
+            </div>
+            <div class="form-group">
+              <label for="admin-product-file">Imagen (.png, .jpg, .webp)</label>
+              <input
+                type="file"
+                id="admin-product-file"
+                name="file"
+                accept=".png,.jpg,.jpeg,.webp"
+                required
+              >
+            </div>
+            <button type="submit" id="admin-image-submit" class="btn btn-primary btn-sm">
+              Validar y guardar imagen
+            </button>
+          </form>
         </section>
 
         <!-- Centro de Notificaciones Persistidas y en Vivo (Fase 4) -->

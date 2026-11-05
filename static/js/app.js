@@ -81,6 +81,10 @@ const staffScopeDescription = document.getElementById("staff-scope-description")
 const adminStoreFilterBox = document.getElementById("admin-store-filter-box");
 const adminStoreFilter = document.getElementById("admin-store-filter");
 const activeRoomsList = document.getElementById("active-rooms-list");
+const adminImageForm = document.getElementById("admin-image-form");
+const adminProductSelect = document.getElementById("admin-product-select");
+const adminProductFile = document.getElementById("admin-product-file");
+const adminImageSubmit = document.getElementById("admin-image-submit");
 
 const ordersListEl = document.getElementById("orders-list");
 const resyncTimestampEl = document.getElementById("resync-timestamp");
@@ -349,6 +353,34 @@ function renderOrdersList(highlightOrderId = null) {
       card.appendChild(actionsDiv);
     }
 
+    // Sección de Comprobante de Pago Seguro (Fase 5)
+    const receiptBar = document.createElement("div");
+    receiptBar.className = "receipt-bar";
+
+    if (order.payment_receipt_path) {
+      const viewLink = document.createElement("a");
+      viewLink.className = "btn btn-outline btn-sm";
+      viewLink.href = `/api/files/orders/${encodeURIComponent(order.id)}/receipt?token=${encodeURIComponent(api.token)}`;
+      viewLink.target = "_blank";
+      viewLink.rel = "noopener";
+      viewLink.textContent = "Ver comprobante validado";
+      receiptBar.appendChild(viewLink);
+    }
+
+    if (state.user.role === "CUSTOMER" && order.status !== "CANCELLED") {
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.className = "receipt-file-input";
+      fileInput.accept = ".png,.jpg,.jpeg,.webp,.pdf";
+      fileInput.dataset.receiptOrderId = String(order.id);
+      fileInput.setAttribute("aria-label", `Subir comprobante para pedido #${order.id}`);
+      receiptBar.appendChild(fileInput);
+    }
+
+    if (receiptBar.childElementCount > 0) {
+      card.appendChild(receiptBar);
+    }
+
     const details = document.createElement("details");
     details.className = "history-details";
     const summary = document.createElement("summary");
@@ -390,11 +422,23 @@ function renderCatalog() {
 
     const info = document.createElement("div");
     info.className = "catalog-item-info";
+    if (prod.image_path) {
+      const img = document.createElement("img");
+      img.className = "catalog-thumb";
+      img.src = `/api/files/products/${encodeURIComponent(prod.image_path)}`;
+      img.alt = prod.name;
+      img.width = 44;
+      img.height = 44;
+      img.loading = "lazy";
+      info.appendChild(img);
+    }
+    const textWrap = document.createElement("div");
     const nameEl = document.createElement("strong");
     nameEl.textContent = `${prod.name} ($${prod.price})`;
     const descEl = document.createElement("span");
     descEl.textContent = prod.description || "";
-    info.append(nameEl, descEl);
+    textWrap.append(nameEl, descEl);
+    info.appendChild(textWrap);
 
     const controls = document.createElement("div");
     controls.className = "qty-controls";
@@ -450,6 +494,7 @@ async function initializeAuthenticatedWorkspace(user, token) {
     customerOrderPanel.hidden = false;
     staffInfoPanel.hidden = false;
     adminStoreFilterBox.hidden = true;
+    adminImageForm.hidden = true;
     staffScopeDescription.textContent =
       "Estás en tu canal personal. Solo recibes eventos de tus propios pedidos.";
 
@@ -465,6 +510,7 @@ async function initializeAuthenticatedWorkspace(user, token) {
     customerOrderPanel.hidden = true;
     staffInfoPanel.hidden = false;
     adminStoreFilterBox.hidden = true;
+    adminImageForm.hidden = true;
     staffScopeDescription.textContent = `Operador asignado a ${getStoreName(
       user.store_id
     )}. Recibes en tiempo real todos los pedidos de tu sucursal.`;
@@ -472,6 +518,7 @@ async function initializeAuthenticatedWorkspace(user, token) {
     customerOrderPanel.hidden = true;
     staffInfoPanel.hidden = false;
     adminStoreFilterBox.hidden = false;
+    adminImageForm.hidden = false;
     staffScopeDescription.textContent =
       "Acceso global de Administrador. Recibes eventos de todas las sucursales en tiempo real.";
 
@@ -485,6 +532,15 @@ async function initializeAuthenticatedWorkspace(user, token) {
       opt.value = String(st.id);
       opt.textContent = st.name;
       adminStoreFilter.appendChild(opt);
+    }
+
+    const allProducts = await api.listProducts();
+    adminProductSelect.replaceChildren();
+    for (const p of allProducts) {
+      const opt = document.createElement("option");
+      opt.value = String(p.id);
+      opt.textContent = `#${p.id} · ${p.name} (${getStoreName(p.store_id)})`;
+      adminProductSelect.appendChild(opt);
     }
   }
 
@@ -590,6 +646,47 @@ ordersListEl.addEventListener("click", async (e) => {
   } catch (err) {
     showToast("Error al actualizar estado", err.message);
     btn.disabled = false;
+  }
+});
+
+ordersListEl.addEventListener("change", async (e) => {
+  const input = e.target.closest("input[type='file'][data-receipt-order-id]");
+  if (!input || !input.files || input.files.length === 0) return;
+
+  const orderId = Number(input.dataset.receiptOrderId);
+  const file = input.files[0];
+  input.disabled = true;
+
+  try {
+    const updatedOrder = await api.uploadOrderReceipt(orderId, file);
+    upsertOrderInMemory(updatedOrder, true);
+    showToast("Comprobante validado", `Archivo adjuntado al Pedido #${orderId}`);
+  } catch (err) {
+    showToast("Archivo rechazado", err.message);
+    input.value = "";
+    input.disabled = false;
+  }
+});
+
+adminImageForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!adminProductFile.files || adminProductFile.files.length === 0) return;
+
+  const productId = Number(adminProductSelect.value);
+  const file = adminProductFile.files[0];
+  adminImageSubmit.disabled = true;
+
+  try {
+    const updatedProd = await api.uploadProductImage(productId, file);
+    showToast(
+      "Imagen de producto guardada",
+      `Producto '${updatedProd.name}' actualizado (${updatedProd.image_path})`
+    );
+    adminProductFile.value = "";
+  } catch (err) {
+    showToast("Imagen rechazada", err.message);
+  } finally {
+    adminImageSubmit.disabled = false;
   }
 });
 

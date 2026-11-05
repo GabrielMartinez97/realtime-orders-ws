@@ -53,3 +53,16 @@ Este documento recopila todas las preguntas de verificación trabajadas en cada 
 - Cada notificación se emite únicamente a la **sala privada del usuario destinatario (`user:{user_id}`)**, porque el estado de lectura (`is_read`) y el contador `unread_count` son individuales por persona (si hay dos operadores en la misma tienda, que uno lea su notificación no debe marcar como leída la del otro operador).
 - Si en `PATCH /api/notifications/{id}/read` no validamos `notif.user_id == current_user.id`, tendríamos un **IDOR**: cualquier usuario autenticado podría pasar IDs consecutivos (`1, 2, 3...`), leer el contenido de notificaciones ajenas en la respuesta JSON y alterar el buzón de otros clientes u operadores.
 
+---
+
+## Fase 5: Subida y Descarga Segura de Archivos (Magic Bytes, UUID y Anti-IDOR)
+
+### Pregunta 5.1: ¿Por qué no basta con validar la extensión del archivo (`.png`, `.pdf`) o el header `Content-Type`, sino que inspeccionamos los primeros bytes binarios (*Magic Bytes*) y renombramos el archivo con un UUID aleatorio?
+- **Falsificación de extensión y `Content-Type`:** Tanto el nombre del archivo como el header `Content-Type` los envía el cliente y son triviales de manipular (por ejemplo, renombrar un ejecutable `malware.exe` o un script HTML a `comprobante.png`). Al inspeccionar los **Magic Bytes** (por ejemplo, `89 50 4E 47 0D 0A 1A 0A` para PNG o `%PDF-` para PDF), verificamos la estructura binaria real del archivo en el servidor.
+- **Por qué renombramos con `uuid.uuid4().hex`:** Si guardáramos el archivo con el nombre que envía el usuario, un atacante podría enviar un nombre como `../../app/main.py` (**Path Traversal**) para sobrescribir código del servidor, o subir archivos con caracteres especiales/colisiones de nombres.
+
+### Pregunta 5.2: ¿Por qué guardamos los comprobantes de pago en `uploads/receipts/` fuera de la carpeta pública `/static` y los servimos mediante un endpoint autenticado (`GET /api/files/orders/{order_id}/receipt`)?
+- Porque un comprobante de pago contiene información financiera y personal sensible del cliente.
+- Si se guardara dentro de `/static`, cualquier persona en internet (o de otra tienda) podría acceder al archivo sin autenticación si conociera o interceptara la URL. Al servirlo mediante el endpoint `GET /api/files/orders/{order_id}/receipt`, el backend valida primero el JWT y verifica **Anti-IDOR** (`assert_can_view_order`), permitiendo el acceso únicamente al cliente dueño del pedido, al operador de esa sucursal o a un administrador.
+
+
