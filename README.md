@@ -9,5 +9,5 @@ Proyecto de portafolio construido paso a paso con **Python 3.11+, FastAPI, WebSo
 - [x] **Fase 3:** Flujo de pedidos en vivo (creación, cambio de estado y recepción en tiempo real con reconexión y resincronización REST).
 - [x] **Fase 4:** Sistema de notificaciones en tiempo real y persistidas.
 - [x] **Fase 5:** Subida y descarga segura de archivos (validación de extensión, tamaño máximo 2 MB y *magic bytes*).
-- [ ] **Fase 6:** Dashboard analítico en vivo con Chart.js.
+- [x] **Fase 6:** Dashboard analítico en vivo con Chart.js.
 - [ ] **Fase 7:** Suite completa de pruebas, guía de entrevista técnica y despliegue.

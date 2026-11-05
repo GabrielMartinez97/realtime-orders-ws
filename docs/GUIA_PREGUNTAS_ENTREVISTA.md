@@ -65,4 +65,17 @@ Este documento recopila todas las preguntas de verificación trabajadas en cada 
 - Porque un comprobante de pago contiene información financiera y personal sensible del cliente.
 - Si se guardara dentro de `/static`, cualquier persona en internet (o de otra tienda) podría acceder al archivo sin autenticación si conociera o interceptara la URL. Al servirlo mediante el endpoint `GET /api/files/orders/{order_id}/receipt`, el backend valida primero el JWT y verifica **Anti-IDOR** (`assert_can_view_order`), permitiendo el acceso únicamente al cliente dueño del pedido, al operador de esa sucursal o a un administrador.
 
+---
+
+## Fase 6: Dashboard Analítico en Vivo (Agregaciones SQL, Chart.js y Push por Salas)
+
+### Pregunta 6.1: ¿Por qué enviamos métricas distintas a la sala `store:{id}` y a la sala `admin:global` dentro de `broadcast_dashboard_update`, en lugar de emitir un único evento `dashboard_update` global a todos?
+- **Principio de mínimo privilegio y aislamiento multi-tienda (Anti-IDOR en WebSockets):** Un `OPERATOR` asignado a la Sucursal Centro (`store:1`) solo está autorizado a conocer las ventas y pedidos activos de su propia sucursal. Si emitiéramos las métricas globales o el arreglo `sales_by_store` con todas las tiendas a `store:1`, estaríamos filtrando información financiera confidencial de otras sucursales a través del payload del WebSocket (visible en la pestaña *Network -> WS* del navegador).
+- Por eso, a `store:{store_id}` se le emite únicamente `compute_dashboard_metrics(db, store_id=store_id)` (`scope="store"`), mientras que a `admin:global` se le emiten tanto las métricas consolidadas (`scope="global"`) como las de la tienda afectada (`store_metrics`), permitiendo al Administrador alternar entre vista global y vista por sucursal sin recargar.
+
+### Pregunta 6.2: En el frontend (`dashboard_charts.js`), ¿por qué reutilizamos la instancia de Chart.js mutando `chart.data.datasets[0].data` y llamando a `chart.update()` en vez de hacer `new Chart(...)` en cada evento WebSocket?
+- **Rendimiento y prevención de fugas de memoria (Memory Leaks en el DOM/Canvas):** Si creáramos un `new Chart(canvas, ...)` cada vez que llega un evento `dashboard_update` sin destruir el anterior, Chart.js acumularía *event listeners* de redimensionado y contextos 2D sobre el mismo `<canvas>`, provocando parpadeos visuales, errores de superposición al pasar el mouse (*hover*) y un incremento constante de memoria RAM en el navegador.
+- Al mantener una única instancia en memoria (`statusChartInstance` y `storeSalesChartInstance`), actualizar el arreglo `data` y ejecutar `.update()`, Chart.js interpola suavemente las barras y el anillo en menos de un frame (16 ms) sin recrear el nodo DOM.
+
+
 

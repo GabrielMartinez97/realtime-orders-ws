@@ -556,16 +556,29 @@ pre:focus-visible {
 .catalog-item-info {
   display: flex;
   align-items: center;
-  gap: var(--s-3);
+  gap: var(--s-4);
+}
+
+.catalog-photo-frame {
+  width: 120px;
+  height: 90px;
+  flex-shrink: 0;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+  background-color: var(--p-bg);
 }
 
 .catalog-thumb {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--r-sm);
+  width: 100%;
+  height: 100%;
+  display: block;
   object-fit: cover;
-  border: 1px solid var(--hairline);
-  background-color: var(--p-bg);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.catalog-item:hover .catalog-thumb {
+  transform: scale(1.03);
 }
 
 .catalog-item-info strong {
@@ -858,4 +871,72 @@ pre:focus-visible {
   border-radius: var(--r-sm);
   padding: var(--s-3) var(--s-4);
   font-size: 0.88rem;
+}
+
+/* Dashboard Analítico en Vivo (Fase 6 — tasteskill stone-blueprint) */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-4);
+  margin-block: var(--s-4);
+}
+
+@media (max-width: 780px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kpi-box {
+  background-color: var(--p-bg);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+  padding: var(--s-4);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.kpi-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--p-muted);
+}
+
+.kpi-value {
+  font-family: var(--font-mono);
+  font-size: 1.65rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--p-ink);
+}
+
+.kpi-meta {
+  font-size: 0.76rem;
+  color: var(--p-muted);
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-4);
+}
+
+@media (max-width: 780px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-card {
+  background-color: var(--p-bg);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+  padding: var(--s-4);
+}
+
+.chart-canvas-wrap {
+  position: relative;
+  height: 220px;
+  width: 100%;
 }

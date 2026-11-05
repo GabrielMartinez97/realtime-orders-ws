@@ -127,4 +127,9 @@ export class ApiClient {
   uploadOrderReceipt(orderId, file) {
     return this.uploadFile(`/api/files/orders/${encodeURIComponent(orderId)}/receipt`, file);
   }
+
+  getDashboard(storeId = null) {
+    const query = storeId ? `?store_id=${encodeURIComponent(storeId)}` : "";
+    return this.request(`/api/dashboard${query}`);
+  }
 }

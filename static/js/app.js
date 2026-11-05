@@ -4,6 +4,7 @@
  */
 
 import { ApiClient } from "./api.js";
+import { renderDashboardMetrics } from "./dashboard_charts.js";
 import { RealtimeWSClient } from "./ws_client.js";
 
 const STATUS_LABELS = {
@@ -85,6 +86,8 @@ const adminImageForm = document.getElementById("admin-image-form");
 const adminProductSelect = document.getElementById("admin-product-select");
 const adminProductFile = document.getElementById("admin-product-file");
 const adminImageSubmit = document.getElementById("admin-image-submit");
+const adminCatalogPreview = document.getElementById("admin-catalog-preview");
+const dashboardPanel = document.getElementById("dashboard-panel");
 
 const ordersListEl = document.getElementById("orders-list");
 const resyncTimestampEl = document.getElementById("resync-timestamp");
@@ -120,8 +123,12 @@ const wsClient = new RealtimeWSClient({
   onEvent: handleRealtimeEvent,
   onStatusChange: handleWSStatusChange,
   onReconnectResync: async () => {
-    showToast("Reconexión exitosa", "Resincronizando pedidos y notificaciones con la API REST...");
-    await Promise.all([resyncOrdersFromREST(), loadNotificationsFromREST()]);
+    showToast("Reconexión exitosa", "Resincronizando pedidos, notificaciones y dashboard...");
+    await Promise.all([
+      resyncOrdersFromREST(),
+      loadNotificationsFromREST(),
+      loadDashboardFromREST(),
+    ]);
   },
   onWireLog: appendWireLog,
 });
@@ -173,11 +180,51 @@ function handleRealtimeEvent(envelope) {
     ].slice(0, 30);
     renderNotifications();
     showToast(notif.title, notif.message);
+  } else if (envelope.event === "dashboard_update" && envelope.data) {
+    handleDashboardUpdateEvent(envelope.data);
   } else if (envelope.event === "subscribed" && envelope.data?.rooms) {
     renderActiveRooms(envelope.data.rooms);
   } else if (envelope.event === "error") {
     showToast("Error WebSocket", envelope.data?.message || "Acción no permitida");
   }
+}
+
+function handleDashboardUpdateEvent(data) {
+  if (!state.user || state.user.role === "CUSTOMER") return;
+
+  if (state.user.role === "OPERATOR") {
+    if (data.metrics && data.metrics.store_id === state.user.store_id) {
+      renderDashboardMetrics(data.metrics);
+    }
+    return;
+  }
+
+  if (state.user.role === "ADMIN") {
+    if (!state.selectedAdminStoreId) {
+      if (data.metrics && data.metrics.scope === "global") {
+        renderDashboardMetrics(data.metrics);
+      }
+    } else if (String(data.affected_store_id) === String(state.selectedAdminStoreId)) {
+      const storeSpecific = data.store_metrics || data.metrics;
+      if (storeSpecific) {
+        renderDashboardMetrics(storeSpecific);
+      }
+    }
+  }
+}
+
+async function loadDashboardFromREST() {
+  if (!state.user || state.user.role === "CUSTOMER") {
+    dashboardPanel.hidden = true;
+    return;
+  }
+  dashboardPanel.hidden = false;
+  const storeFilter =
+    state.user.role === "ADMIN" && state.selectedAdminStoreId
+      ? state.selectedAdminStoreId
+      : null;
+  const metrics = await api.getDashboard(storeFilter);
+  renderDashboardMetrics(metrics);
 }
 
 async function loadNotificationsFromREST() {
@@ -423,14 +470,17 @@ function renderCatalog() {
     const info = document.createElement("div");
     info.className = "catalog-item-info";
     if (prod.image_path) {
+      const frame = document.createElement("div");
+      frame.className = "catalog-photo-frame";
       const img = document.createElement("img");
       img.className = "catalog-thumb";
       img.src = `/api/files/products/${encodeURIComponent(prod.image_path)}`;
       img.alt = prod.name;
-      img.width = 44;
-      img.height = 44;
+      img.width = 120;
+      img.height = 90;
       img.loading = "lazy";
-      info.appendChild(img);
+      frame.appendChild(img);
+      info.appendChild(frame);
     }
     const textWrap = document.createElement("div");
     const nameEl = document.createElement("strong");
@@ -477,6 +527,52 @@ function updateCartTotal() {
     }
   }
   cartTotalLabel.textContent = `$${total.toFixed(2)}`;
+}
+
+function renderAdminCatalogPreview(products) {
+  const currentSelected = adminProductSelect.value;
+  adminProductSelect.replaceChildren();
+  adminCatalogPreview.replaceChildren();
+
+  for (const p of products) {
+    const opt = document.createElement("option");
+    opt.value = String(p.id);
+    opt.textContent = `#${p.id} · ${p.name} (${getStoreName(p.store_id)})`;
+    adminProductSelect.appendChild(opt);
+
+    if (p.image_path) {
+      const row = document.createElement("div");
+      row.className = "catalog-item";
+      const info = document.createElement("div");
+      info.className = "catalog-item-info";
+
+      const frame = document.createElement("div");
+      frame.className = "catalog-photo-frame";
+      const img = document.createElement("img");
+      img.className = "catalog-thumb";
+      img.src = `/api/files/products/${encodeURIComponent(p.image_path)}`;
+      img.alt = p.name;
+      img.width = 120;
+      img.height = 90;
+      img.loading = "lazy";
+      frame.appendChild(img);
+
+      const textWrap = document.createElement("div");
+      const nameEl = document.createElement("strong");
+      nameEl.textContent = p.name;
+      const storeEl = document.createElement("span");
+      storeEl.textContent = `${getStoreName(p.store_id)} · ${p.image_path}`;
+      textWrap.append(nameEl, storeEl);
+
+      info.append(frame, textWrap);
+      row.appendChild(info);
+      adminCatalogPreview.appendChild(row);
+    }
+  }
+
+  if (currentSelected) {
+    adminProductSelect.value = currentSelected;
+  }
 }
 
 async function initializeAuthenticatedWorkspace(user, token) {
@@ -535,16 +631,14 @@ async function initializeAuthenticatedWorkspace(user, token) {
     }
 
     const allProducts = await api.listProducts();
-    adminProductSelect.replaceChildren();
-    for (const p of allProducts) {
-      const opt = document.createElement("option");
-      opt.value = String(p.id);
-      opt.textContent = `#${p.id} · ${p.name} (${getStoreName(p.store_id)})`;
-      adminProductSelect.appendChild(opt);
-    }
+    renderAdminCatalogPreview(allProducts);
   }
 
-  await Promise.all([resyncOrdersFromREST(), loadNotificationsFromREST()]);
+  await Promise.all([
+    resyncOrdersFromREST(),
+    loadNotificationsFromREST(),
+    loadDashboardFromREST(),
+  ]);
   wsClient.connect(token);
 }
 
@@ -683,6 +777,8 @@ adminImageForm.addEventListener("submit", async (e) => {
       `Producto '${updatedProd.name}' actualizado (${updatedProd.image_path})`
     );
     adminProductFile.value = "";
+    const allProducts = await api.listProducts();
+    renderAdminCatalogPreview(allProducts);
   } catch (err) {
     showToast("Imagen rechazada", err.message);
   } finally {
@@ -745,12 +841,13 @@ adminStoreFilter.addEventListener("change", async () => {
       store_id: Number(state.selectedAdminStoreId),
     });
   }
-  await resyncOrdersFromREST();
+  await Promise.all([resyncOrdersFromREST(), loadDashboardFromREST()]);
 });
 
 document.getElementById("btn-manual-resync").addEventListener("click", () => {
   resyncOrdersFromREST();
   loadNotificationsFromREST();
+  loadDashboardFromREST();
 });
 
 document.getElementById("btn-simulate-drop").addEventListener("click", () => {

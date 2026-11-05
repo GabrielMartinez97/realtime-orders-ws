@@ -217,6 +217,7 @@
             <button type="submit" id="admin-image-submit" class="btn btn-primary btn-sm">
               Validar y guardar imagen
             </button>
+            <div id="admin-catalog-preview" class="catalog-list"></div>
           </form>
         </section>
 
@@ -247,8 +248,51 @@
         </section>
       </div>
 
-      <!-- Columna Derecha: Tablero de Pedidos en Tiempo Real -->
+      <!-- Columna Derecha: Dashboard en Vivo (Admin/Operador) + Tablero de Pedidos -->
       <div class="workspace-main">
+        <section id="dashboard-panel" class="card" hidden>
+          <div class="card-header-inline board-header">
+            <div>
+              <h2>Dashboard analítico en vivo</h2>
+              <p class="muted small">Actualizado automáticamente por eventos WebSocket sin recargar</p>
+            </div>
+            <span id="dashboard-scope-badge" class="badge-tech">En vivo</span>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi-box">
+              <span class="kpi-label">Pedidos activos en curso</span>
+              <strong id="kpi-active-orders" class="kpi-value">0</strong>
+              <span class="kpi-meta">Recibidos · Preparando · Listos</span>
+            </div>
+            <div class="kpi-box">
+              <span class="kpi-label">Ventas del día (UTC)</span>
+              <strong id="kpi-today-sales" class="kpi-value">$0.00</strong>
+              <span class="kpi-meta">Excluye pedidos cancelados</span>
+            </div>
+            <div class="kpi-box">
+              <span class="kpi-label">Tiempo prom. preparación</span>
+              <strong id="kpi-avg-prep" class="kpi-value">0.0 min</strong>
+              <span class="kpi-meta">Desde recibido hasta listo</span>
+            </div>
+          </div>
+
+          <div class="charts-grid">
+            <div class="chart-card">
+              <p class="section-label">Pedidos por estado</p>
+              <div class="chart-canvas-wrap">
+                <canvas id="chart-orders-status" aria-label="Gráfico de pedidos por estado"></canvas>
+              </div>
+            </div>
+            <div class="chart-card">
+              <p class="section-label">Ventas del día por sucursal</p>
+              <div class="chart-canvas-wrap">
+                <canvas id="chart-store-sales" aria-label="Gráfico de ventas por sucursal"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section class="card">
           <div class="card-header-inline board-header">
             <div>
@@ -266,6 +310,7 @@
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
   <script type="module" src="/static/js/app.js"></script>
 </body>
 </html>

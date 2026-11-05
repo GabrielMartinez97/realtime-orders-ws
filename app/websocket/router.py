@@ -17,7 +17,7 @@ from app.schemas.ws_events import (
     WSClientMessage,
     WSServerEventType,
 )
-from app.services import notification_service, order_service
+from app.services import dashboard_service, notification_service, order_service
 from app.websocket.manager import ClientConnection, ws_manager
 
 router = APIRouter(tags=["WebSockets"])
@@ -178,6 +178,7 @@ async def _handle_ws_update_order_status(
         from_status=previous_status,
         to_status=updated_order.status.value,
     )
+    await dashboard_service.broadcast_dashboard_update(db, store_id=updated_order.store_id)
 
 
 @router.websocket("/ws")

@@ -12,7 +12,7 @@ from app.models.order import Order, OrderStatus
 from app.models.user import User, UserRole
 from app.schemas.order import OrderCreate, OrderRead, OrderStatusUpdate
 from app.schemas.ws_events import WSServerEventType
-from app.services import notification_service, order_service
+from app.services import dashboard_service, notification_service, order_service
 from app.websocket.manager import ws_manager
 
 router = APIRouter(prefix="/api/orders", tags=["Pedidos"])
@@ -54,6 +54,7 @@ async def create_new_order(
         data={"order": order_data},
     )
     await notification_service.notify_order_created(db, order=order)
+    await dashboard_service.broadcast_dashboard_update(db, store_id=order.store_id)
     return order
 
 
@@ -120,4 +121,5 @@ async def change_order_status(
         from_status=previous_status,
         to_status=order.status.value,
     )
+    await dashboard_service.broadcast_dashboard_update(db, store_id=order.store_id)
     return order
