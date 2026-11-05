@@ -3,31 +3,28 @@
 import json
 from typing import Any
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, status
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, status
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.core.database import SessionLocal
 from app.core.security import decode_access_token
 from app.models.store import Store
 from app.models.user import User, UserRole
+from app.schemas.order import OrderRead, OrderStatusUpdate
 from app.schemas.ws_events import (
     WSClientActionType,
     WSClientMessage,
     WSServerEventType,
 )
+from app.services import order_service
 from app.websocket.manager import ClientConnection, ws_manager
 
 router = APIRouter(tags=["WebSockets"])
 
 
 def _is_origin_allowed(origin: str | None) -> bool:
-    """Verifica el header Origin para prevenir Cross-Site WebSocket Hijacking (CSWSH).
-
-    - Si el navegador envía Origin, debe coincidir con ALLOWED_ORIGINS (o ser testserver en pytest).
-    - Si no se envía Origin (por ejemplo clientes CLI / scripts internos en desarrollo), se permite.
-    """
+    """Verifica el header Origin para prevenir Cross-Site WebSocket Hijacking (CSWSH)."""
     if not origin:
         return True
     normalized = origin.rstrip("/")
@@ -65,7 +62,6 @@ async def _handle_subscribe_store(
         )
         return
 
-    # Validación de permisos en el backend dentro del mensaje WebSocket:
     if conn.role == UserRole.CUSTOMER:
         await ws_manager.send_personal_event(
             conn,
@@ -114,6 +110,69 @@ async def _handle_subscribe_store(
     )
 
 
+async def _handle_ws_update_order_status(
+    db: Session,
+    conn: ClientConnection,
+    msg: WSClientMessage,
+) -> None:
+    """Permite cambiar el estado de un pedido por WebSocket validando RBAC y anti-IDOR en el backend."""
+    if msg.order_id is None or msg.status is None:
+        await ws_manager.send_personal_event(
+            conn,
+            event=WSServerEventType.ERROR,
+            data={
+                "code": "MISSING_FIELDS",
+                "message": "Para actualizar un pedido debes enviar order_id y status.",
+            },
+        )
+        return
+
+    actor = db.get(User, conn.user_id)
+    if actor is None or not actor.is_active:
+        await ws_manager.send_personal_event(
+            conn,
+            event=WSServerEventType.ERROR,
+            data={"code": "UNAUTHORIZED", "message": "Usuario inactivo o no encontrado."},
+        )
+        return
+
+    try:
+        existing = order_service.get_order_for_user(db, user=actor, order_id=msg.order_id)
+        previous_status = existing.status.value
+        updated_order = order_service.update_order_status(
+            db,
+            actor=actor,
+            order_id=msg.order_id,
+            payload=OrderStatusUpdate(status=msg.status, comment=msg.comment),
+        )
+    except HTTPException as exc:
+        code = "FORBIDDEN_ACTION" if exc.status_code == status.HTTP_403_FORBIDDEN else "UPDATE_REJECTED"
+        await ws_manager.send_personal_event(
+            conn,
+            event=WSServerEventType.ERROR,
+            data={"code": code, "message": str(exc.detail)},
+        )
+        return
+
+    order_data = OrderRead.model_validate(updated_order).model_dump(mode="json")
+    target_rooms = [
+        ws_manager.user_room(updated_order.customer_id),
+        ws_manager.store_room(updated_order.store_id),
+        ws_manager.admin_room(),
+    ]
+    await ws_manager.broadcast_to_rooms(
+        target_rooms,
+        event=WSServerEventType.STATUS_UPDATED,
+        data={
+            "order": order_data,
+            "from_status": previous_status,
+            "to_status": updated_order.status.value,
+            "changed_by_user_id": actor.id,
+            "changed_by_name": actor.full_name,
+        },
+    )
+
+
 @router.websocket("/ws")
 async def websocket_endpoint(
     websocket: WebSocket,
@@ -131,8 +190,6 @@ async def websocket_endpoint(
     await websocket.accept()
     conn: ClientConnection | None = None
 
-    # Usamos el generador get_db() o SessionLocal; para permitir override en pytest
-    # resolvemos la dependencia get_db desde websocket.app.dependency_overrides si existe.
     from app.core.database import get_db
 
     db_provider = websocket.app.dependency_overrides.get(get_db, get_db)
@@ -226,7 +283,7 @@ async def websocket_endpoint(
                 )
                 continue
 
-            # A partir de aquí la conexión ya está autenticada
+            # Mensajes de clientes autenticados
             if client_msg.type == WSClientActionType.PING:
                 await ws_manager.send_personal_event(
                     conn,
@@ -238,6 +295,8 @@ async def websocket_endpoint(
                 )
             elif client_msg.type == WSClientActionType.SUBSCRIBE_store:
                 await _handle_subscribe_store(db, conn, client_msg.store_id)
+            elif client_msg.type == WSClientActionType.UPDATE_ORDER_STATUS:
+                await _handle_ws_update_order_status(db, conn, client_msg)
             elif client_msg.type == WSClientActionType.AUTH:
                 await ws_manager.send_personal_event(
                     conn,

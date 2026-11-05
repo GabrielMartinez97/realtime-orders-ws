@@ -2,9 +2,12 @@
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 import app.models  # noqa: F401 - Registra todos los modelos en Base.metadata
 from app.core.config import settings
@@ -12,6 +15,9 @@ from app.core.database import Base, SessionLocal, engine
 from app.core.seed import seed_initial_data
 from app.routers import auth, orders, products, stores, users
 from app.websocket import router as ws_router
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_DIR = BASE_DIR / "static"
 
 
 @asynccontextmanager
@@ -26,7 +32,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    version="0.1.0",
+    version="0.3.0",
     description=(
         "Sistema de pedidos multi-tienda en tiempo real con FastAPI, SQLAlchemy, "
         "autenticación JWT, control de acceso por roles (RBAC/anti-IDOR) y WebSockets."
@@ -56,7 +62,7 @@ async def security_headers_middleware(request: Request, call_next) -> Response:
     return response
 
 
-# Registro de Routers REST (Fase 1) y WebSocket (Fase 2)
+# Registro de Routers REST y WebSocket
 app.include_router(auth.router)
 app.include_router(stores.router)
 app.include_router(users.router)
@@ -64,8 +70,18 @@ app.include_router(products.router)
 app.include_router(orders.router)
 app.include_router(ws_router.router)
 
+# Montaje de archivos estáticos del Frontend Vanilla
+if STATIC_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+
+@app.get("/", include_in_schema=False)
+def serve_frontend() -> FileResponse:
+    """Sirve la interfaz web principal en tiempo real."""
+    return FileResponse(STATIC_DIR / "index.html")
+
 
 @app.get("/api/health", tags=["Sistema"])
 def health_check() -> dict[str, str]:
     """Endpoint de verificación de estado del servidor."""
-    return {"status": "ok", "phase": "2-websockets-rooms-broadcast"}
+    return {"status": "ok", "phase": "3-live-orders-flow"}

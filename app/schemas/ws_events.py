@@ -5,6 +5,8 @@ from datetime import datetime, timezone
 from typing import Any, Optional
 from pydantic import BaseModel, Field
 
+from app.models.order import OrderStatus
+
 
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
@@ -29,6 +31,7 @@ class WSClientActionType(str, enum.Enum):
     AUTH = "auth"
     PING = "ping"
     SUBSCRIBE_store = "subscribe_store"
+    UPDATE_ORDER_STATUS = "update_order_status"
 
 
 class WSEnvelope(BaseModel):
@@ -46,4 +49,7 @@ class WSClientMessage(BaseModel):
     type: WSClientActionType
     token: Optional[str] = None
     store_id: Optional[int] = Field(default=None, gt=0)
+    order_id: Optional[int] = Field(default=None, gt=0)
+    status: Optional[OrderStatus] = None
+    comment: Optional[str] = Field(default=None, max_length=255)
     client_timestamp: Optional[int] = None
