@@ -24,8 +24,9 @@ uploads/products/*
 uploads/receipts/*
 !uploads/receipts/.gitkeep
 
-# IDE / OS
+# IDE / OS / Notas privadas
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+docs/

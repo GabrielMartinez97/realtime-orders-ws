@@ -32,7 +32,7 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    version="0.3.0",
+    version="1.0.0",
     description=(
         "Sistema de pedidos multi-tienda en tiempo real con FastAPI, SQLAlchemy, "
         "autenticación JWT, control de acceso por roles (RBAC/anti-IDOR) y WebSockets."
@@ -87,4 +87,4 @@ def serve_frontend() -> FileResponse:
 @app.get("/api/health", tags=["Sistema"])
 def health_check() -> dict[str, str]:
     """Endpoint de verificación de estado del servidor."""
-    return {"status": "ok", "phase": "6-live-dashboard"}
+    return {"status": "ok", "phase": "7-production-ready"}

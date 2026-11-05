@@ -1,0 +1,23 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: realtime-orders-ws
+    ports:
+      - "8000:8000"
+    environment:
+      - PROJECT_NAME=Kinetix Orders WS
+      - DATABASE_URL=sqlite:////app/data/realtime_orders.db
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-clave_secreta_desarrollo_cambiar_en_produccion_32b}
+      - JWT_ACCESS_TOKEN_EXPIRE_MINUTES=120
+      - ALLOWED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
+      - SEED_DEMO_DATA=true
+    volumes:
+      - orders_data:/app/data
+      - orders_uploads:/app/uploads
+    restart: unless-stopped
+
+volumes:
+  orders_data:
+  orders_uploads:
