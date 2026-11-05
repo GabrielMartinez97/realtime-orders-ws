@@ -510,3 +510,59 @@ button:focus-visible {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
   font-size: 0.88rem;
 }
+
+.notif-bell-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.notif-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background-color: var(--danger);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.notif-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 8px;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  font-size: 0.84rem;
+}
+
+.notif-item.unread {
+  border-inline-start: 3px solid var(--primary);
+  background-color: rgba(59, 130, 246, 0.08);
+}
+
+.notif-item-body strong {
+  display: block;
+  margin-block-end: 0.15rem;
+}
+
+.notif-item-body p {
+  margin: 0;
+  color: var(--text-muted);
+}
+

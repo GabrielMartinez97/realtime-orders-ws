@@ -17,7 +17,7 @@ from app.schemas.ws_events import (
     WSClientMessage,
     WSServerEventType,
 )
-from app.services import order_service
+from app.services import notification_service, order_service
 from app.websocket.manager import ClientConnection, ws_manager
 
 router = APIRouter(tags=["WebSockets"])
@@ -170,6 +170,13 @@ async def _handle_ws_update_order_status(
             "changed_by_user_id": actor.id,
             "changed_by_name": actor.full_name,
         },
+    )
+    await notification_service.notify_order_status_changed(
+        db,
+        order=updated_order,
+        actor=actor,
+        from_status=previous_status,
+        to_status=updated_order.status.value,
     )
 
 

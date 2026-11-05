@@ -9,6 +9,15 @@ def _login_token(client: TestClient, email: str, password: str) -> str:
     return res.json()["access_token"]
 
 
+def _receive_until_event(ws, expected_event: str, max_messages: int = 5) -> dict:
+    """Lee tramas del WebSocket hasta encontrar el tipo de evento esperado."""
+    for _ in range(max_messages):
+        msg = ws.receive_json()
+        if msg.get("event") == expected_event:
+            return msg
+    raise AssertionError(f"No se recibió el evento '{expected_event}' tras {max_messages} mensajes.")
+
+
 def test_live_order_creation_and_status_broadcast_across_roles(client: TestClient) -> None:
     """Verifica que al crear un pedido y cambiar su estado, los eventos lleguen en vivo a las salas correctas."""
     ana_token = _login_token(client, "ana@cliente.com", "Cliente123!")
@@ -20,7 +29,6 @@ def test_live_order_creation_and_status_broadcast_across_roles(client: TestClien
         client.websocket_connect(f"/ws?token={op_centro_token}") as ws_op_centro,
         client.websocket_connect(f"/ws?token={admin_token}") as ws_admin,
     ):
-        # Consumimos el mensaje inicial connection_established de los 3 sockets
         assert ws_ana.receive_json()["event"] == "connection_established"
         assert ws_op_centro.receive_json()["event"] == "connection_established"
         assert ws_admin.receive_json()["event"] == "connection_established"
@@ -40,8 +48,7 @@ def test_live_order_creation_and_status_broadcast_across_roles(client: TestClien
 
         # 2. Los 3 conectados (Ana, Operador Centro y Admin) reciben 'pedido_creado' al instante
         for ws in (ws_ana, ws_op_centro, ws_admin):
-            event_msg = ws.receive_json()
-            assert event_msg["event"] == "pedido_creado"
+            event_msg = _receive_until_event(ws, "pedido_creado")
             assert event_msg["data"]["order"]["id"] == order_id
             assert event_msg["data"]["order"]["status"] == "RECEIVED"
 
@@ -57,8 +64,7 @@ def test_live_order_creation_and_status_broadcast_across_roles(client: TestClien
 
         # 4. Los 3 reciben 'estado_actualizado' en vivo con from_status='RECEIVED' y to_status='PREPARING'
         for ws in (ws_ana, ws_op_centro, ws_admin):
-            status_msg = ws.receive_json()
-            assert status_msg["event"] == "estado_actualizado"
+            status_msg = _receive_until_event(ws, "estado_actualizado")
             assert status_msg["data"]["order"]["id"] == order_id
             assert status_msg["data"]["from_status"] == "RECEIVED"
             assert status_msg["data"]["to_status"] == "PREPARING"
@@ -82,7 +88,6 @@ def test_ws_update_order_status_enforces_anti_idor(client: TestClient) -> None:
     with client.websocket_connect(f"/ws?token={op_norte_token}") as ws_op_norte:
         assert ws_op_norte.receive_json()["event"] == "connection_established"
 
-        # Operador Norte (store_id=2) intenta modificar un pedido de Sucursal Centro (store_id=1) por WS
         ws_op_norte.send_json(
             {
                 "type": "update_order_status",
@@ -90,6 +95,5 @@ def test_ws_update_order_status_enforces_anti_idor(client: TestClient) -> None:
                 "status": "PREPARING",
             }
         )
-        err_msg = ws_op_norte.receive_json()
-        assert err_msg["event"] == "error"
+        err_msg = _receive_until_event(ws_op_norte, "error")
         assert err_msg["data"]["code"] == "FORBIDDEN_ACTION"

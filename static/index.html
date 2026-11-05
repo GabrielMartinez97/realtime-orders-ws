@@ -22,6 +22,16 @@
       <button type="button" id="btn-simulate-drop" class="btn btn-outline btn-sm">
         Simular Caída WS
       </button>
+      <button
+        type="button"
+        id="btn-toggle-notifications"
+        class="btn btn-outline btn-sm notif-bell-btn"
+        aria-expanded="true"
+        aria-controls="notifications-panel"
+      >
+        Notificaciones
+        <span id="notif-unread-badge" class="notif-badge" hidden>0</span>
+      </button>
       <div class="user-pill">
         <strong id="user-name-label"></strong>
         <span id="user-role-badge" class="role-badge"></span>
@@ -150,6 +160,20 @@
             <h3>Salas WebSocket activas</h3>
             <ul id="active-rooms-list" class="rooms-list"></ul>
           </div>
+        </section>
+
+        <!-- Centro de Notificaciones Persistidas y en Vivo (Fase 4) -->
+        <section id="notifications-panel" class="card">
+          <div class="card-header-inline">
+            <h2>
+              Notificaciones
+              <span id="panel-unread-count" class="notif-badge" hidden>0</span>
+            </h2>
+            <button type="button" id="btn-mark-all-read" class="btn btn-outline btn-sm">
+              Marcar todas leídas
+            </button>
+          </div>
+          <div id="notifications-list" class="notifications-list"></div>
         </section>
 
         <!-- Monitor Técnico de Tramas WebSocket en Vivo -->

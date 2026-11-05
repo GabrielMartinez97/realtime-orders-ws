@@ -40,3 +40,16 @@ Este documento recopila todas las preguntas de verificación trabajadas en cada 
 ### Pregunta 3.2: ¿Por qué el cliente debe llamar a `GET /api/orders` (API REST) automáticamente justo después de reconectar el WebSocket?
 - Porque los WebSockets en memoria **no guardan cola de mensajes históricos** para clientes desconectados. Si el cliente estuvo sin señal durante 8 segundos y en ese lapso el operador cambió el pedido de `PREPARING` a `READY`, ese evento WebSocket se emitió cuando el cliente no estaba conectado.
 - Al ejecutar una **resincronización REST (`GET /api/orders`)** apenas se restablece el WebSocket (`isReconnect === true`), la interfaz obtiene la "fuente de la verdad" desde la base de datos y nunca queda con un estado desactualizado.
+
+---
+
+## Fase 4: Sistema Híbrido de Notificaciones (Persistencia en BD + Push en Tiempo Real)
+
+### Pregunta 4.1: ¿Por qué las notificaciones deben guardarse primero en la base de datos (`notifications`) antes de enviarse por WebSocket, en vez de solo mandarlas como un evento efímero por WebSocket?
+- Porque el usuario destinatario puede **no estar conectado en ese preciso instante** (por ejemplo, cerró la pestaña, se le apagó el teléfono o está sin red).
+- Si solo enviáramos la trama por WebSocket sin persistirla en base de datos, cualquier notificación emitida mientras el usuario está offline se perdería para siempre y tampoco existiría el estado `is_read` ni el contador real `unread_count` al abrir la aplicación desde otro dispositivo.
+
+### Pregunta 4.2: ¿A qué sala enviamos el evento `"notificacion"` y qué pasaría si en `PATCH /api/notifications/{notification_id}/read` no validáramos `notif.user_id == current_user.id`?
+- Cada notificación se emite únicamente a la **sala privada del usuario destinatario (`user:{user_id}`)**, porque el estado de lectura (`is_read`) y el contador `unread_count` son individuales por persona (si hay dos operadores en la misma tienda, que uno lea su notificación no debe marcar como leída la del otro operador).
+- Si en `PATCH /api/notifications/{id}/read` no validamos `notif.user_id == current_user.id`, tendríamos un **IDOR**: cualquier usuario autenticado podría pasar IDs consecutivos (`1, 2, 3...`), leer el contenido de notificaciones ajenas en la respuesta JSON y alterar el buzón de otros clientes u operadores.
+

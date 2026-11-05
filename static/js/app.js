@@ -1,5 +1,5 @@
 /**
- * Controlador principal de la interfaz de Pedidos en Tiempo Real (Fase 3).
+ * Controlador principal de la interfaz de Pedidos y Notificaciones en Tiempo Real (Fase 4).
  * Construye nodos DOM seguros (textContent) sin usar handlers inline (CSP-friendly).
  */
 
@@ -38,6 +38,8 @@ const state = {
   products: [],
   cart: {}, // { productId: quantity }
   orders: new Map(), // orderId -> order object
+  notifications: [], // lista ordenada de notificaciones
+  unreadCount: 0,
   selectedAdminStoreId: "",
 };
 
@@ -50,6 +52,13 @@ const wsStatusText = document.getElementById("ws-status-text");
 const wsLatency = document.getElementById("ws-latency");
 const userNameLabel = document.getElementById("user-name-label");
 const userRoleBadge = document.getElementById("user-role-badge");
+
+const btnToggleNotifications = document.getElementById("btn-toggle-notifications");
+const notifUnreadBadge = document.getElementById("notif-unread-badge");
+const panelUnreadCount = document.getElementById("panel-unread-count");
+const notificationsPanel = document.getElementById("notifications-panel");
+const notificationsListEl = document.getElementById("notifications-list");
+const btnMarkAllRead = document.getElementById("btn-mark-all-read");
 
 const loginForm = document.getElementById("login-form");
 const loginEmail = document.getElementById("login-email");
@@ -107,8 +116,8 @@ const wsClient = new RealtimeWSClient({
   onEvent: handleRealtimeEvent,
   onStatusChange: handleWSStatusChange,
   onReconnectResync: async () => {
-    showToast("Reconexión exitosa", "Resincronizando pedidos con la API REST...");
-    await resyncOrdersFromREST();
+    showToast("Reconexión exitosa", "Resincronizando pedidos y notificaciones con la API REST...");
+    await Promise.all([resyncOrdersFromREST(), loadNotificationsFromREST()]);
   },
   onWireLog: appendWireLog,
 });
@@ -147,18 +156,19 @@ function handleRealtimeEvent(envelope) {
   if (envelope.event === "pedido_creado" && envelope.data?.order) {
     const order = envelope.data.order;
     upsertOrderInMemory(order, true);
-    showToast(
-      "Nuevo Pedido en Vivo",
-      `Pedido #${order.id} recibido ($${order.total_amount})`
-    );
   } else if (envelope.event === "estado_actualizado" && envelope.data?.order) {
     const order = envelope.data.order;
-    const toStatus = STATUS_LABELS[envelope.data.to_status] || envelope.data.to_status;
     upsertOrderInMemory(order, true);
-    showToast(
-      `Pedido #${order.id} actualizado`,
-      `Nuevo estado: ${toStatus} (por ${envelope.data.changed_by_name || "Sistema"})`
-    );
+  } else if (envelope.event === "notificacion" && envelope.data?.notification) {
+    const notif = envelope.data.notification;
+    state.unreadCount = envelope.data.unread_count ?? state.unreadCount + 1;
+    // Evitamos duplicados si ya existía en la lista
+    state.notifications = [
+      notif,
+      ...state.notifications.filter((n) => n.id !== notif.id),
+    ].slice(0, 30);
+    renderNotifications();
+    showToast(notif.title, notif.message);
   } else if (envelope.event === "subscribed" && envelope.data?.rooms) {
     renderActiveRooms(envelope.data.rooms);
   } else if (envelope.event === "error") {
@@ -166,8 +176,66 @@ function handleRealtimeEvent(envelope) {
   }
 }
 
+async function loadNotificationsFromREST() {
+  if (!state.user) return;
+  const summary = await api.listNotifications(30);
+  state.notifications = summary.items || [];
+  state.unreadCount = summary.unread_count || 0;
+  renderNotifications();
+}
+
+function renderNotifications() {
+  // Actualizar badges de contador de no leídas
+  if (state.unreadCount > 0) {
+    notifUnreadBadge.textContent = String(state.unreadCount);
+    notifUnreadBadge.hidden = false;
+    panelUnreadCount.textContent = String(state.unreadCount);
+    panelUnreadCount.hidden = false;
+  } else {
+    notifUnreadBadge.hidden = true;
+    panelUnreadCount.hidden = true;
+  }
+
+  notificationsListEl.replaceChildren();
+  if (state.notifications.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "muted small";
+    empty.textContent = "No tienes notificaciones registradas.";
+    notificationsListEl.appendChild(empty);
+    return;
+  }
+
+  for (const notif of state.notifications) {
+    const item = document.createElement("div");
+    item.className = `notif-item ${notif.is_read ? "read" : "unread"}`;
+
+    const body = document.createElement("div");
+    body.className = "notif-item-body";
+
+    const titleEl = document.createElement("strong");
+    const timeStr = new Date(notif.created_at).toLocaleTimeString();
+    titleEl.textContent = `${notif.title} · ${timeStr}`;
+
+    const msgEl = document.createElement("p");
+    msgEl.textContent = notif.message;
+
+    body.append(titleEl, msgEl);
+    item.appendChild(body);
+
+    if (!notif.is_read) {
+      const readBtn = document.createElement("button");
+      readBtn.type = "button";
+      readBtn.className = "btn btn-outline btn-sm";
+      readBtn.dataset.notifId = String(notif.id);
+      readBtn.textContent = "Leída";
+      item.appendChild(readBtn);
+    }
+
+    notificationsListEl.appendChild(item);
+  }
+}
+
 function upsertOrderInMemory(order, flash = false) {
-  // Si el Admin tiene un filtro de tienda seleccionado, respetamos ese filtro visual
   if (
     state.user?.role === "ADMIN" &&
     state.selectedAdminStoreId &&
@@ -219,7 +287,6 @@ function renderOrdersList(highlightOrderId = null) {
       card.classList.add("highlight-flash");
     }
 
-    // Cabecera del pedido
     const header = document.createElement("div");
     header.className = "order-header";
 
@@ -238,7 +305,6 @@ function renderOrdersList(highlightOrderId = null) {
     header.append(titleGroup, badge);
     card.appendChild(header);
 
-    // Lista de ítems
     const ul = document.createElement("ul");
     ul.className = "order-items-ul";
     for (const item of order.items || []) {
@@ -255,7 +321,6 @@ function renderOrdersList(highlightOrderId = null) {
       card.appendChild(notesP);
     }
 
-    // Botones de acción según Rol y Máquina de Estados
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "order-actions";
 
@@ -284,7 +349,6 @@ function renderOrdersList(highlightOrderId = null) {
       card.appendChild(actionsDiv);
     }
 
-    // Historial desplegable nativo (<details> + <summary>)
     const details = document.createElement("details");
     details.className = "history-details";
     const summary = document.createElement("summary");
@@ -424,7 +488,7 @@ async function initializeAuthenticatedWorkspace(user, token) {
     }
   }
 
-  await resyncOrdersFromREST();
+  await Promise.all([resyncOrdersFromREST(), loadNotificationsFromREST()]);
   wsClient.connect(token);
 }
 
@@ -529,6 +593,53 @@ ordersListEl.addEventListener("click", async (e) => {
   }
 });
 
+notificationsListEl.addEventListener("click", async (e) => {
+  const btn = e.target.closest("button[data-notif-id]");
+  if (!btn) return;
+
+  const notifId = Number(btn.dataset.notifId);
+  btn.disabled = true;
+  try {
+    await api.markNotificationRead(notifId);
+    const target = state.notifications.find((n) => n.id === notifId);
+    if (target && !target.is_read) {
+      target.is_read = true;
+      state.unreadCount = Math.max(0, state.unreadCount - 1);
+    }
+    renderNotifications();
+  } catch (err) {
+    showToast("Error", err.message);
+    btn.disabled = false;
+  }
+});
+
+btnMarkAllRead.addEventListener("click", async () => {
+  if (state.unreadCount === 0) return;
+  btnMarkAllRead.disabled = true;
+  try {
+    await api.markAllNotificationsRead();
+    for (const n of state.notifications) {
+      n.is_read = TrueBoolean();
+    }
+    state.unreadCount = 0;
+    renderNotifications();
+  } catch (err) {
+    showToast("Error", err.message);
+  } finally {
+    btnMarkAllRead.disabled = false;
+  }
+});
+
+function TrueBoolean() {
+  return true;
+}
+
+btnToggleNotifications.addEventListener("click", () => {
+  const isHidden = notificationsPanel.hidden;
+  notificationsPanel.hidden = !isHidden;
+  btnToggleNotifications.setAttribute("aria-expanded", String(isHidden));
+});
+
 adminStoreFilter.addEventListener("change", async () => {
   state.selectedAdminStoreId = adminStoreFilter.value;
   if (state.selectedAdminStoreId) {
@@ -542,6 +653,7 @@ adminStoreFilter.addEventListener("change", async () => {
 
 document.getElementById("btn-manual-resync").addEventListener("click", () => {
   resyncOrdersFromREST();
+  loadNotificationsFromREST();
 });
 
 document.getElementById("btn-simulate-drop").addEventListener("click", () => {
@@ -557,6 +669,8 @@ document.getElementById("btn-logout").addEventListener("click", () => {
   api.setToken(null);
   state.user = null;
   state.orders.clear();
+  state.notifications = [];
+  state.unreadCount = 0;
   workspaceSection.hidden = true;
   sessionBar.hidden = true;
   authSection.hidden = false;

@@ -80,4 +80,20 @@ export class ApiClient {
       body: JSON.stringify({ status, comment }),
     });
   }
+
+  listNotifications(limit = 30) {
+    return this.request(`/api/notifications?limit=${encodeURIComponent(limit)}`);
+  }
+
+  markNotificationRead(notificationId) {
+    return this.request(`/api/notifications/${encodeURIComponent(notificationId)}/read`, {
+      method: "PATCH",
+    });
+  }
+
+  markAllNotificationsRead() {
+    return this.request("/api/notifications/read-all", {
+      method: "POST",
+    });
+  }
 }
