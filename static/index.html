@@ -1,163 +1,200 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-type="software" data-radius="soft" data-buttons="solid" data-motion="on">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Pedidos en Tiempo Real | FastAPI + WebSockets</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="page-type" content="software">
+  <meta name="site-kind" content="software">
+  <title>Kinetix Orders — Sistema de Pedidos en Tiempo Real</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400..700&family=JetBrains+Mono:wght@400..500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
+  <!-- deal: kind=software palette=stone-blueprint type=host radius=soft -->
   <header class="topbar">
-    <div class="topbar-brand">
-      <h1>Pedidos en Vivo <span class="badge-tech">WebSockets</span></h1>
-      <p class="subtitle">Sincronización instantánea multi-tienda con RBAC y reconexión automática</p>
-    </div>
+    <div class="wrap topbar-inner">
+      <div class="topbar-brand">
+        <span class="brand-mark" aria-hidden="true">K</span>
+        <div>
+          <h1>Kinetix Orders <span class="badge-tech">ws://realtime</span></h1>
+          <p class="subtitle">Despacho y trazabilidad multi-tienda sobre WebSockets nativos</p>
+        </div>
+      </div>
 
-    <div id="session-bar" class="session-bar" hidden>
-      <div class="ws-indicator-box" aria-live="polite">
-        <span id="ws-dot" class="ws-dot disconnected" aria-hidden="true"></span>
-        <span id="ws-status-text">Desconectado</span>
-        <span id="ws-latency" class="ws-latency"></span>
+      <div id="session-bar" class="session-bar" hidden>
+        <div class="ws-indicator-box" aria-live="polite">
+          <span id="ws-dot" class="ws-dot disconnected" aria-hidden="true"></span>
+          <span id="ws-status-text">Desconectado</span>
+          <span id="ws-latency" class="ws-latency"></span>
+        </div>
+        <button type="button" id="btn-simulate-drop" class="btn btn-outline btn-sm">
+          Cortar red WS
+        </button>
+        <button
+          type="button"
+          id="btn-toggle-notifications"
+          class="btn btn-outline btn-sm notif-bell-btn"
+          aria-expanded="true"
+          aria-controls="notifications-panel"
+        >
+          Notificaciones
+          <span id="notif-unread-badge" class="notif-badge" hidden>0</span>
+        </button>
+        <div class="user-pill">
+          <strong id="user-name-label"></strong>
+          <span id="user-role-badge" class="role-badge"></span>
+        </div>
+        <button type="button" id="btn-logout" class="btn btn-danger btn-sm">Salir</button>
       </div>
-      <button type="button" id="btn-simulate-drop" class="btn btn-outline btn-sm">
-        Simular Caída WS
-      </button>
-      <button
-        type="button"
-        id="btn-toggle-notifications"
-        class="btn btn-outline btn-sm notif-bell-btn"
-        aria-expanded="true"
-        aria-controls="notifications-panel"
-      >
-        Notificaciones
-        <span id="notif-unread-badge" class="notif-badge" hidden>0</span>
-      </button>
-      <div class="user-pill">
-        <strong id="user-name-label"></strong>
-        <span id="user-role-badge" class="role-badge"></span>
-      </div>
-      <button type="button" id="btn-logout" class="btn btn-danger btn-sm">Cerrar sesión</button>
     </div>
   </header>
 
-  <main class="container">
+  <main class="wrap main-shell">
     <!-- Contenedor de alertas y toasts en vivo -->
     <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-    <!-- VISTA 1: AUTENTICACIÓN Y ACCESO RÁPIDO DEMO -->
-    <section id="auth-section" class="card auth-card">
-      <h2>Iniciar Sesión</h2>
-      <p class="muted">
-        Abre 2 o 3 pestañas de esta página e inicia sesión con distintos roles para ver los pedidos
-        y cambios de estado viajar en tiempo real por WebSocket sin recargar.
-      </p>
-
-      <div class="demo-accounts">
-        <h3>Acceso rápido de demostración (1 clic)</h3>
-        <div class="demo-grid" id="demo-buttons-grid">
-          <button type="button" class="btn btn-demo" data-email="ana@cliente.com" data-pass="Cliente123!">
-            <strong>Ana Gómez</strong>
-            <span>Rol: CUSTOMER (Cliente 1)</span>
-          </button>
-          <button type="button" class="btn btn-demo" data-email="carlos@cliente.com" data-pass="Cliente123!">
-            <strong>Carlos Ruiz</strong>
-            <span>Rol: CUSTOMER (Cliente 2)</span>
-          </button>
-          <button type="button" class="btn btn-demo" data-email="operador.centro@tiendas.com" data-pass="Operador123!">
-            <strong>Operador Centro</strong>
-            <span>Rol: OPERATOR (Sucursal Centro #1)</span>
-          </button>
-          <button type="button" class="btn btn-demo" data-email="operador.norte@tiendas.com" data-pass="Operador123!">
-            <strong>Operador Norte</strong>
-            <span>Rol: OPERATOR (Sucursal Norte #2)</span>
-          </button>
-          <button type="button" class="btn btn-demo" data-email="admin@tiendas.com" data-pass="Admin123!">
-            <strong>Administrador General</strong>
-            <span>Rol: ADMIN (Todas las tiendas)</span>
-          </button>
-        </div>
+    <!-- VISTA 1: HERO EDITORIAL + ACCESO RÁPIDO DEMO -->
+    <section id="auth-section" class="auth-split">
+      <div class="auth-editorial">
+        <p class="eyebrow">Arquitectura orientada a eventos · FastAPI + SQLAlchemy 2.0</p>
+        <h2 class="hero-display">
+          Cada pedido sincronizado en menos de 15&nbsp;ms.
+          <span class="muted">Sin recargas, sin polling y validado en el servidor.</span>
+        </h2>
+        <dl class="spec-rows">
+          <div class="spec-row">
+            <dt>Transporte</dt>
+            <dd>WebSockets RFC 6455 con Heartbeat <code>ping/pong</code> y Backoff Exponencial</dd>
+          </div>
+          <div class="spec-row">
+            <dt>Aislamiento</dt>
+            <dd>Salas dedicadas <code>user:{id}</code>, <code>store:{id}</code> y <code>admin:global</code></dd>
+          </div>
+          <div class="spec-row">
+            <dt>Seguridad</dt>
+            <dd>JWT HS256, Bcrypt 12 rondas, control RBAC + Anti-IDOR y validación de Origin</dd>
+          </div>
+        </dl>
       </div>
 
-      <form id="login-form" action="/api/auth/login" method="POST" class="form-stack">
-        <div class="form-group">
-          <label for="login-email">Correo electrónico</label>
-          <input
-            type="email"
-            id="login-email"
-            name="email"
-            inputmode="email"
-            autocomplete="email"
-            autocorrect="off"
-            autocapitalize="off"
-            spellcheck="false"
-            required
-          >
+      <div class="card auth-card">
+        <h2>Entrar al panel operativo</h2>
+        <p class="muted">
+          Abre dos pestañas lado a lado e inicia sesión con distintos roles para ver los pedidos
+          cruzar en vivo por el canal WebSocket.
+        </p>
+
+        <div class="demo-accounts">
+          <p class="section-label">Cuentas de demostración (1 clic)</p>
+          <div class="demo-grid" id="demo-buttons-grid">
+            <button type="button" class="btn btn-demo" data-email="ana@cliente.com" data-pass="Cliente123!">
+              <strong>Ana Gómez</strong>
+              <span>CUSTOMER · Cliente 1</span>
+            </button>
+            <button type="button" class="btn btn-demo" data-email="carlos@cliente.com" data-pass="Cliente123!">
+              <strong>Carlos Ruiz</strong>
+              <span>CUSTOMER · Cliente 2</span>
+            </button>
+            <button type="button" class="btn btn-demo" data-email="operador.centro@tiendas.com" data-pass="Operador123!">
+              <strong>Operador Centro</strong>
+              <span>OPERATOR · Sucursal #1</span>
+            </button>
+            <button type="button" class="btn btn-demo" data-email="operador.norte@tiendas.com" data-pass="Operador123!">
+              <strong>Operador Norte</strong>
+              <span>OPERATOR · Sucursal #2</span>
+            </button>
+            <button type="button" class="btn btn-demo" data-email="admin@tiendas.com" data-pass="Admin123!">
+              <strong>Administrador General</strong>
+              <span>ADMIN · Vista global</span>
+            </button>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="login-password">Contraseña</label>
-          <input
-            type="password"
-            id="login-password"
-            name="password"
-            autocomplete="current-password"
-            minlength="6"
-            required
-          >
-        </div>
+        <form id="login-form" action="/api/auth/login" method="POST" class="form-stack">
+          <div class="form-group">
+            <label for="login-email">Correo electrónico</label>
+            <input
+              type="email"
+              id="login-email"
+              name="email"
+              inputmode="email"
+              autocomplete="email"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              required
+            >
+          </div>
 
-        <p id="login-error" class="form-error" role="alert" hidden></p>
-        <button type="submit" id="login-submit-btn" class="btn btn-primary">Entrar al Sistema</button>
-      </form>
+          <div class="form-group">
+            <label for="login-password">Contraseña</label>
+            <input
+              type="password"
+              id="login-password"
+              name="password"
+              autocomplete="current-password"
+              minlength="6"
+              required
+            >
+          </div>
+
+          <p id="login-error" class="form-error" role="alert" hidden></p>
+          <button type="submit" id="login-submit-btn" class="btn btn-primary">
+            Abrir sesión operativa
+          </button>
+        </form>
+      </div>
     </section>
 
     <!-- VISTA 2: PANEL DE TRABAJO EN TIEMPO REAL -->
     <section id="workspace-section" class="workspace-grid" hidden>
-      <!-- Columna Izquierda: Acción según Rol + Log Técnico de WebSockets -->
+      <!-- Columna Izquierda: Acción según Rol + Notificaciones + Monitor WS -->
       <div class="workspace-sidebar">
         <!-- Panel de Creación de Pedido (Solo visible para CUSTOMER) -->
         <section id="customer-order-panel" class="card" hidden>
-          <h2>Nuevo Pedido</h2>
+          <h2>Emitir nuevo pedido</h2>
           <form id="create-order-form" action="/api/orders" method="POST" class="form-stack">
             <div class="form-group">
-              <label for="store-select">Selecciona Sucursal</label>
+              <label for="store-select">Sucursal de despacho</label>
               <select id="store-select" name="store_id" required></select>
             </div>
 
             <div class="form-group">
-              <label>Catálogo de Productos</label>
+              <label>Catálogo disponible</label>
               <div id="catalog-list" class="catalog-list"></div>
             </div>
 
             <div class="form-group">
-              <label for="order-notes">Notas para la tienda (opcional)</label>
+              <label for="order-notes">Instrucciones de entrega (opcional)</label>
               <textarea id="order-notes" name="notes" rows="2" maxlength="500"></textarea>
             </div>
 
             <div class="cart-summary">
-              <span>Total estimado (validado en servidor):</span>
+              <span>Total calculado en servidor</span>
               <strong id="cart-total-label">$0.00</strong>
             </div>
 
             <p id="order-form-error" class="form-error" role="alert" hidden></p>
             <button type="submit" id="create-order-submit" class="btn btn-primary">
-              Enviar Pedido en Vivo
+              Confirmar y transmitir pedido
             </button>
           </form>
         </section>
 
         <!-- Panel de Filtro e Información de Sala (Para OPERATOR y ADMIN) -->
         <section id="staff-info-panel" class="card" hidden>
-          <h2>Control de Sucursal</h2>
+          <h2>Suscripción de canales</h2>
           <p id="staff-scope-description" class="muted"></p>
           <div id="admin-store-filter-box" class="form-group" hidden>
-            <label for="admin-store-filter">Filtrar pedidos por tienda</label>
+            <label for="admin-store-filter">Inspeccionar sucursal</label>
             <select id="admin-store-filter" name="store_filter">
               <option value="">Todas las tiendas (Global)</option>
             </select>
           </div>
           <div class="rooms-box">
-            <h3>Salas WebSocket activas</h3>
+            <p class="section-label">Salas WebSocket conectadas</p>
             <ul id="active-rooms-list" class="rooms-list"></ul>
           </div>
         </section>
@@ -166,7 +203,7 @@
         <section id="notifications-panel" class="card">
           <div class="card-header-inline">
             <h2>
-              Notificaciones
+              Buzón de notificaciones
               <span id="panel-unread-count" class="notif-badge" hidden>0</span>
             </h2>
             <button type="button" id="btn-mark-all-read" class="btn btn-outline btn-sm">
@@ -177,12 +214,14 @@
         </section>
 
         <!-- Monitor Técnico de Tramas WebSocket en Vivo -->
-        <section class="card">
+        <section class="card card-inverse">
           <div class="card-header-inline">
-            <h2>Monitor WebSocket</h2>
-            <button type="button" id="btn-clear-ws-log" class="btn btn-outline btn-sm">Limpiar</button>
+            <h2>Inspector de tramas WS</h2>
+            <button type="button" id="btn-clear-ws-log" class="btn btn-outline-inverse btn-sm">
+              Limpiar
+            </button>
           </div>
-          <p class="muted small">Tramas JSON enviadas y recibidas en esta pestaña:</p>
+          <p class="muted-inverse small">Tráfico bidireccional JSON sobre TCP en esta sesión:</p>
           <pre id="ws-log-box" class="ws-log-box" tabindex="0"><code>Esperando conexión...</code></pre>
         </section>
       </div>
@@ -190,13 +229,13 @@
       <!-- Columna Derecha: Tablero de Pedidos en Tiempo Real -->
       <div class="workspace-main">
         <section class="card">
-          <div class="card-header-inline">
+          <div class="card-header-inline board-header">
             <div>
-              <h2 id="orders-board-title">Pedidos en Tiempo Real</h2>
-              <p id="resync-timestamp" class="muted small"></p>
+              <h2 id="orders-board-title"> Flujo de pedidos en vivo</h2>
+              <p id="resync-timestamp" class="muted small mono-meta"></p>
             </div>
             <button type="button" id="btn-manual-resync" class="btn btn-outline btn-sm">
-              Resincronizar (REST)
+              Sincronizar estado (REST)
             </button>
           </div>
 
