@@ -1,0 +1,31 @@
+# Entorno virtual y caché de Python
+.venv/
+venv/
+ENV/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Secretos y configuración local (NUNCA subir a Git)
+.env
+.env.local
+
+# Base de datos SQLite local
+*.db
+*.sqlite
+*.sqlite3
+
+# Archivos subidos por usuarios (se mantienen las carpetas con .gitkeep)
+uploads/products/*
+!uploads/products/.gitkeep
+uploads/receipts/*
+!uploads/receipts/.gitkeep
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
