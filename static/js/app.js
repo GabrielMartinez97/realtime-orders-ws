@@ -88,6 +88,10 @@ const adminProductFile = document.getElementById("admin-product-file");
 const adminImageSubmit = document.getElementById("admin-image-submit");
 const adminCatalogPreview = document.getElementById("admin-catalog-preview");
 const dashboardPanel = document.getElementById("dashboard-panel");
+const wsInspectorPanel = document.getElementById("ws-inspector-panel");
+const btnSimulateDrop = document.getElementById("btn-simulate-drop");
+const btnManualResync = document.getElementById("btn-manual-resync");
+const ordersBoardTitle = document.getElementById("orders-board-title");
 
 const ordersListEl = document.getElementById("orders-list");
 const resyncTimestampEl = document.getElementById("resync-timestamp");
@@ -346,7 +350,10 @@ function renderOrdersList(highlightOrderId = null) {
     strongId.textContent = `Pedido #${order.id} · ${getStoreName(order.store_id)}`;
     const subMeta = document.createElement("span");
     subMeta.className = "muted small";
-    subMeta.textContent = ` · Cliente ID #${order.customer_id} · Total: $${order.total_amount}`;
+    subMeta.textContent =
+      state.user.role === "CUSTOMER"
+        ? ` · Total: $${order.total_amount}`
+        : ` · Cliente ID #${order.customer_id} · Total: $${order.total_amount}`;
     titleGroup.append(strongId, subMeta);
 
     const badge = document.createElement("span");
@@ -431,7 +438,10 @@ function renderOrdersList(highlightOrderId = null) {
     const details = document.createElement("details");
     details.className = "history-details";
     const summary = document.createElement("summary");
-    summary.textContent = `Historial de auditoría (${(order.status_history || []).length} eventos)`;
+    summary.textContent =
+      state.user.role === "CUSTOMER"
+        ? `Seguimiento de mi pedido (${(order.status_history || []).length} actualizaciones)`
+        : `Historial de auditoría (${(order.status_history || []).length} eventos)`;
     details.appendChild(summary);
 
     const histUl = document.createElement("ul");
@@ -441,7 +451,10 @@ function renderOrdersList(highlightOrderId = null) {
       const toText = STATUS_LABELS[h.to_status] || h.to_status;
       const timeText = new Date(h.changed_at).toLocaleTimeString();
       const commentText = h.comment ? ` (${h.comment})` : "";
-      hLi.textContent = `[${timeText}] ${fromText}${toText} · Usuario #${h.changed_by_user_id}${commentText}`;
+      hLi.textContent =
+        state.user.role === "CUSTOMER"
+          ? `[${timeText}] ${fromText}${toText}${commentText}`
+          : `[${timeText}] ${fromText}${toText} · Usuario #${h.changed_by_user_id}${commentText}`;
       histUl.appendChild(hLi);
     }
     details.appendChild(histUl);
@@ -588,13 +601,16 @@ async function initializeAuthenticatedWorkspace(user, token) {
 
   if (user.role === "CUSTOMER") {
     customerOrderPanel.hidden = false;
-    staffInfoPanel.hidden = false;
+    staffInfoPanel.hidden = true;
+    wsInspectorPanel.hidden = true;
+    btnSimulateDrop.hidden = true;
+    btnManualResync.hidden = true;
+    resyncTimestampEl.hidden = true;
     adminStoreFilterBox.hidden = true;
     adminImageForm.hidden = true;
     adminProductSelect.replaceChildren();
     adminCatalogPreview.replaceChildren();
-    staffScopeDescription.textContent =
-      "Estás en tu canal personal. Solo recibes eventos de tus propios pedidos.";
+    ordersBoardTitle.textContent = "Mis pedidos en tiempo real";
 
     storeSelect.replaceChildren();
     for (const st of state.stores) {
@@ -607,18 +623,28 @@ async function initializeAuthenticatedWorkspace(user, token) {
   } else if (user.role === "OPERATOR") {
     customerOrderPanel.hidden = true;
     staffInfoPanel.hidden = false;
+    wsInspectorPanel.hidden = false;
+    btnSimulateDrop.hidden = false;
+    btnManualResync.hidden = false;
+    resyncTimestampEl.hidden = false;
     adminStoreFilterBox.hidden = true;
     adminImageForm.hidden = true;
     adminProductSelect.replaceChildren();
     adminCatalogPreview.replaceChildren();
+    ordersBoardTitle.textContent = "Flujo de pedidos en vivo";
     staffScopeDescription.textContent = `Operador asignado a ${getStoreName(
       user.store_id
     )}. Recibes en tiempo real todos los pedidos de tu sucursal.`;
   } else if (user.role === "ADMIN") {
     customerOrderPanel.hidden = true;
     staffInfoPanel.hidden = false;
+    wsInspectorPanel.hidden = false;
+    btnSimulateDrop.hidden = false;
+    btnManualResync.hidden = false;
+    resyncTimestampEl.hidden = false;
     adminStoreFilterBox.hidden = false;
     adminImageForm.hidden = false;
+    ordersBoardTitle.textContent = "Flujo de pedidos en vivo";
     staffScopeDescription.textContent =
       "Acceso global de Administrador. Recibes eventos de todas las sucursales en tiempo real.";
 
