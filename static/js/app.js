@@ -591,6 +591,8 @@ async function initializeAuthenticatedWorkspace(user, token) {
     staffInfoPanel.hidden = false;
     adminStoreFilterBox.hidden = true;
     adminImageForm.hidden = true;
+    adminProductSelect.replaceChildren();
+    adminCatalogPreview.replaceChildren();
     staffScopeDescription.textContent =
       "Estás en tu canal personal. Solo recibes eventos de tus propios pedidos.";
 
@@ -607,6 +609,8 @@ async function initializeAuthenticatedWorkspace(user, token) {
     staffInfoPanel.hidden = false;
     adminStoreFilterBox.hidden = true;
     adminImageForm.hidden = true;
+    adminProductSelect.replaceChildren();
+    adminCatalogPreview.replaceChildren();
     staffScopeDescription.textContent = `Operador asignado a ${getStoreName(
       user.store_id
     )}. Recibes en tiempo real todos los pedidos de tu sucursal.`;
