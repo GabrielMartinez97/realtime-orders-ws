@@ -865,10 +865,27 @@ function TrueBoolean() {
   return true;
 }
 
-btnToggleNotifications.addEventListener("click", () => {
+btnToggleNotifications.addEventListener("click", (e) => {
+  e.stopPropagation();
   const isHidden = notificationsPanel.hidden;
   notificationsPanel.hidden = !isHidden;
   btnToggleNotifications.setAttribute("aria-expanded", String(isHidden));
+});
+
+document.addEventListener("click", (e) => {
+  if (notificationsPanel.hidden) return;
+  const wrap = document.getElementById("notif-dropdown-wrap");
+  if (wrap && !wrap.contains(e.target)) {
+    notificationsPanel.hidden = true;
+    btnToggleNotifications.setAttribute("aria-expanded", "false");
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !notificationsPanel.hidden) {
+    notificationsPanel.hidden = true;
+    btnToggleNotifications.setAttribute("aria-expanded", "false");
+  }
 });
 
 adminStoreFilter.addEventListener("change", async () => {
@@ -903,6 +920,8 @@ document.getElementById("btn-logout").addEventListener("click", () => {
   state.orders.clear();
   state.notifications = [];
   state.unreadCount = 0;
+  notificationsPanel.hidden = true;
+  btnToggleNotifications.setAttribute("aria-expanded", "false");
   workspaceSection.hidden = true;
   sessionBar.hidden = true;
   authSection.hidden = false;
